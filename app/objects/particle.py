@@ -11,7 +11,7 @@ from models.particle import Particle
 
 # constants
 G      = 6.67408    * 10**-11   # gravitational constant [ m³ / (kg ⋅ s²) ]
-AU     = 1.49598023 * 10**11    # astronomical unit: length of the semi-major axis [AU]
+AU     = 1.49598023 * 10**11    # astronomical unit: length of the semi-major axis [m]
 Msun   = 1.98855    * 10**30    # solar mass as standard unit [solar masses]
 Rearth = 6.371      * 10**6     # Earth's mean radius [m]
 
@@ -36,14 +36,16 @@ class Particle(object):
         
         alpha            = current orbital angular position from the aphelion
         r                = current distance from the barycenter
+        tilt             = inclination of the axis [°]
               
     """
     
     # CONSTRUCTOR
-    def __init__(self, name, mass, radius, rotationPeriod, barycenter, a, e, theta0=0*math.pi, orbitalDirection=-1 ):
+    def __init__(self, name, mass, radius, rotationPeriod, barycenter, a, e, theta0=0*math.pi, orbitalDirection=-1, tilt=0 ):
         self.name             = name
         self.mass             = mass
         self.radius           = radius
+        self.tilt             = tilt
         self.rotationPeriod   = rotationPeriod
         self.barycenter       = barycenter
         self.a                = a

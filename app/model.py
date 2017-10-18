@@ -45,6 +45,7 @@ def init(  ):
         e                = eccentricity, measure of how much the orbit deviates from being circular (without unit)
         theta0           = optional: starting angle in radian [rad], default is 0
         orbitalDirection = optional: flight direction around the barycenter, default is -1; positive value=clockwise || negative value=counterclockwise
+        tilt             = inclination of the axis [°]
               
     """
     sun        = Star( name              = "Sun",
@@ -55,11 +56,11 @@ def init(  ):
                        a                 = 0,
                        e                 = 0,
                        theta0            = 0,
-                       orbitalDirection  = -1
+                       orbitalDirection  = -1,
                      )
     mercury    = Planet( "Mercury"   , 3.3011  * 10**23, 2.4397 * 10**6,     58.646,     sun, 5.790905   * 10**10, 0.2056300 )
     venus      = Planet( "Venus"     , 4.86750 * 10**24, 6.0518 * 10**6,   -243.025,     sun, 1.08208    * 10**11, 0.0067720 )
-    earth      = Planet( "Earth"     , 5.97237 * 10**24, 6.371  * 10**6, 0.99726968,     sun, 1.49598023 * 10**11, 0.0167086 ) # todays eccentricity
+    earth      = Planet( "Earth"     , 5.97237 * 10**24, 6.371  * 10**6, 0.99726968,     sun, 1.49598023 * 10**11, 0.0167086, tilt=23.44 ) # todays eccentricity
 #    earth      = Planet( "Earth"     , 5.97237 * 10**24, 6.371  * 10**6, 0.99726968,     sun, 1.49598023 * 10**11, 0.000055 ) # lowest eccentricity
 #    earth      = Planet( "Earth"     , 5.97237 * 10**24, 6.371  * 10**6, 0.99726968,     sun, 1.49598023 * 10**11, 0.0679   ) # highest eccentricity
     mars       = Planet( "Mars"      , 6.41710 * 10**23, 3.3895 * 10**6,   1.025957,     sun, 2.279392   * 10**11, 0.0934000 )

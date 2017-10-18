@@ -10,6 +10,8 @@ import visual as vs
 # constants
 DAY  = 86400                           # mean solar day [s]
 YEAR = 365.25                          # a solar year is a circulation of the earth on its orbit around the sun or the time required for it [days]
+S    = 1367                            # so called solar constant at a distance of 1 AU [W/m²]
+AU   = 1.49598023 * 10**11             # astronomical unit: length of the semi-major axis [m]
 
 
 settings = {
@@ -68,9 +70,12 @@ class Simulation():
                 # DISPLAY INFOS
                 if planet in system.observations:
 
+                    r = planet.orbitalDistance/AU
+                    I = S/(4 * r**2)
+                    J = S/(4 * math.sqrt(1 - planet.e**2))
 #                    sideBar.time.SetLabel( "%.2f days" % (t/DAY) )
                     sideBar.time.SetLabel( "%.2f years" % (t/DAY/YEAR) )
-                    sideBar.distance.SetLabel( "%.2f km" % (planet.orbitalDistance/1000) )
+                    sideBar.distance.SetLabel( "%.2f AU" % (r) )
                     sideBar.orbitalVelocity.SetLabel( "%.2f km/s" % (planet.orbitalVelocity/1000) )
                     sideBar.rotationalVelocity.SetLabel( "%.3f km/s" % (planet.rotationalVelocity/1000) )
                     # DEBUG
