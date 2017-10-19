@@ -26,9 +26,9 @@ class Particle( vs.sphere ):
               
         """        
         vs.sphere.__init__( self, pos=pos, radius=radius, color=color, make_trail=False )
-        if (body.tilt != 0):
-            tilt = math.radians(body.tilt)
-            vs.arrow(pos=pos, axis=vs.vector(math.sin(tilt), math.cos(tilt), 0), color=color)
+        #if (body.tilt != 0):
+        tilt = math.radians(body.tilt)
+        vs.arrow(pos=pos, axis=vs.vector(math.sin(tilt), math.cos(tilt), 0), color=color)
         self.body       = body
         self.makeTrail  = makeTrail
         self.initialPos = pos
