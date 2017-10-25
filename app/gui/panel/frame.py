@@ -42,7 +42,7 @@ class ControlPanel(wx.Frame):
         sb.StatusBar(self)
         sp.SidePanel(self)
 
-        self.SetSize((400, 800))
+        self.SetSize((800, 800))
         self.SetTitle('SolarSIM')
         self.Centre()
         self.Show()

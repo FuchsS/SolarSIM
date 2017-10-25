@@ -124,6 +124,7 @@ def init(  ):
     # ADDING OBJECTS TO THE MODEL
     model              = expObject
     model.stars        = [ sun ]
+#    model.stars        = [  ]
     model.planets      = [ earth ]
     model.moons        = [  ]
 #    model.planets      = [ mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto ]
@@ -135,9 +136,10 @@ def init(  ):
     comparisonList = model.planets
     comparisons = [  ]
     for entry in comparisonList:
-        newObject = Planet( entry.name, entry.mass, entry.radius, entry.tilt, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
-        newObject.createModel( entry.model.initialPos, entry.model.radius, color=vs.color.red )
+        newObject = Planet( entry.name, entry.mass, entry.radius, 0, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
+        newObject.createModel( entry.model.initialPos, entry.model.radius,  material=vs.materials.BlueMarble, ) #color=vs.color.red )
         newObject.model.visible = False # hide the object, so that only its trail is visible
+        newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
         comparisons.append(newObject)
     model.comparisons = comparisons
     model.solarSystem += model.comparisons

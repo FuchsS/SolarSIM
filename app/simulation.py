@@ -24,7 +24,7 @@ settings = {
 #    'stepSize' : 1800,
 #    'stepSize' : 60,
 #    'stepSize' : 1,
-    'speed'    : 50,
+    'speed'    : 1,
 #    'speed'    : 10000000000000000000000000000,
 #    'speed'    : 1
     }
@@ -117,13 +117,13 @@ class Simulation():
             for body in system.solarSystem:
                 # Simulate rotation around the objects own axis
                 body.model.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),               # angle in radians [rad]
-                                   axis   = ( 0, body.rotationPeriod, 0 )                             # x, y, z
+                                   axis   = body.model.rotationalAxis.axis # x, y, z
                                  )
                 # Simulate movement and rotation of the object rings
                 if body.model.rings:
                     body.model.rings.pos = body.model.pos
                     body.model.rings.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),     # angle in radians [rad]
-                                             axis   = ( 0, body.rotationPeriod, 0 )                   # x, y, z
+                                             axis = body.model.rotationalAxis.axis # x, y, z
                                            )
             
             

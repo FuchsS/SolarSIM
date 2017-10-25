@@ -24,14 +24,27 @@ class Particle( vs.sphere ):
             texture          = optional: alternatively an image can be loaded as texture, default is None
             showTrail        = optional: if True a curve will be drawn as trail, default is True
               
-        """        
-        vs.sphere.__init__( self, pos=pos, radius=radius, color=color, make_trail=False )
-        #if (body.tilt != 0):
+        """
         tilt = math.radians(body.tilt)
-        vs.arrow(pos=pos, axis=vs.vector(math.sin(tilt), math.cos(tilt), 0), color=color)
+        vs.sphere.__init__( self, pos=pos, radius=radius, axis=vs.vector( math.cos(tilt), math.sin(tilt), 0), color=color, make_trail=False )
         self.body       = body
         self.makeTrail  = makeTrail
         self.initialPos = pos
+        
+        # ADD A ROTATIONAL AXIS
+        self.axisFrame = vs.frame(pos=pos)
+# Präzession!!! Das Vorzeichen vor der x-Koordinate ist ausschlaggebend für die Präzession
+#the minus in front of the -math.sin(tilt) is relevant for the precession
+        self.rotationalAxis = vs.arrow( 
+                frame       = self.axisFrame, 
+                pos         = vs.vector(  math.sin(tilt), -math.cos(tilt), 0),
+                axis        = vs.vector( -math.sin(tilt),  math.cos(tilt), 0), 
+                length      = 4. * radius, 
+                shaftwidth  = 0.01,
+                headwidth   = 0.01,
+                headlength  = 0.01,
+                color       = color 
+        )
         
         # DETERMINE POSITION AND ORBITAL SETTINGS
         self.a = self.x

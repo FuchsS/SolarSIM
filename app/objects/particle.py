@@ -112,7 +112,9 @@ class Particle(object):
         z  = self.model.b * math.sin(self.alpha)
         x *= self.model.orbitalDirection.x
         z *= self.model.orbitalDirection.z
-        self.model.pos = (x, 0, z)
+        self.model.pos           = (x, 0, z) # move planet
+        self.model.axisFrame.pos = (x, 0, z) # move rotational axis
+        
 
 
 

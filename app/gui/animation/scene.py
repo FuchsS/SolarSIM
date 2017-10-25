@@ -31,15 +31,16 @@ class Scene:
 
         # 3D scene
         scene = vs.display( title   = "SolarSIM",                                         # title of the window
+                            fullscreen = True,                                            # full screen option
                             x       = 0,                                                  # x-position of the window on the screen (pixels from upper left)
                             y       = 0,                                                  # y-position of the window on the screen (pixels from upper left)
                             lights  = [],                                                 # deactivates distant default light sources
 #                            ambient = 0,                                                 # color of the ambient light (0=no ambient ligt, with realistic shadows)
                             ambient = vs.color.gray(0.6),                                 # compromise
 #                            ambient = vs.color.white,                                     # color of the ambient light (= bright light, hardly any shadows)
-                            center  = (0, 0, 0),                                          # location at which the camera looks
+                            center  = (10, 0, 0),                                          # location at which the camera looks
 #                            forward = (0, 0, -1),                                         # camera direction
-                            range   = 10                                                  # zoom to the location
+                            range   = 5                                                    # zoom to the location
                           )
         scene.infoLabel = vs.label( pos = vs.vector(-5.5, 5.5, 0),
                                     border = 1,
