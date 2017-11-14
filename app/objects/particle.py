@@ -27,7 +27,8 @@ class Particle(object):
         name             = name of the object
         mass             = mass in kilogramm [kg]
         radius           = radius in meter [m]
-        tilt             = inclination of the axis [°]
+        tilt             = inclination of the rotational axis [°]
+        precession       = orientation of the rotational axis # now just a sign, later in degree [°]
         rotationPeriod   = rotation period around the objects own axis in days [d]; positive value=clockwise || negative value=counterclockwise
         barycenter       = center of mass around which two or more bodies orbit [now: celestial object; should be coordinates which are automatically detected]
         a                = semi-major axis is one half of the major axis, and thus runs from the centre to the perimeter of the orbit [m]
@@ -41,11 +42,12 @@ class Particle(object):
     """
     
     # CONSTRUCTOR
-    def __init__(self, name, mass, radius, tilt, rotationPeriod, barycenter, a, e, theta0=0*math.pi, orbitalDirection=-1 ):
+    def __init__(self, name, mass, radius, tilt, precession, rotationPeriod, barycenter, a, e, theta0=0*math.pi, orbitalDirection=-1 ):
         self.name             = name
         self.mass             = mass
         self.radius           = radius
         self.tilt             = tilt
+        self.precession       = precession
         self.rotationPeriod   = rotationPeriod
         self.barycenter       = barycenter
         self.a                = a
