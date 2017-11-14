@@ -34,10 +34,6 @@ class App:
       
         simulation.run( animation, panel )
     
-
-
-
-
 def main():
     app = wx.App()
     App()

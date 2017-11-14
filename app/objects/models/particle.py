@@ -26,19 +26,18 @@ class Particle( vs.sphere ):
               
         """
         tilt = math.radians(body.tilt)
-        vs.sphere.__init__( self, pos=pos, radius=radius, axis=vs.vector( math.cos(tilt), math.sin(tilt), 0), color=color, make_trail=False )
+        precession = body.precession
+        vs.sphere.__init__( self, pos=pos, radius=radius, axis=vs.vector( math.cos(tilt), precession * math.sin(tilt), 0), color=color, make_trail=False )
         self.body       = body
         self.makeTrail  = makeTrail
         self.initialPos = pos
         
         # ADD A ROTATIONAL AXIS
-        self.axisFrame = vs.frame(pos=pos)
-# Präzession!!! Das Vorzeichen vor der x-Koordinate ist ausschlaggebend für die Präzession
-#the minus in front of the -math.sin(tilt) is relevant for the precession
+        self.axisFrame = vs.frame(pos=pos)        
         self.rotationalAxis = vs.arrow( 
                 frame       = self.axisFrame, 
-                pos         = vs.vector(  math.sin(tilt), -math.cos(tilt), 0),
-                axis        = vs.vector( -math.sin(tilt),  math.cos(tilt), 0), 
+                pos         = vs.vector(  precession * math.sin(tilt), -math.cos(tilt), 0),
+                axis        = vs.vector( -precession * math.sin(tilt),  math.cos(tilt), 0), 
                 length      = 4. * radius, 
                 shaftwidth  = 0.01,
                 headwidth   = 0.01,

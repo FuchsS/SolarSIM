@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import helpers.exp_object as expObject # a custom object that can be expanded with the dot notation to add properties
+from helpers.exp_object import eObject # a custom object that can be expanded with the dot notation to add properties
 
 import visual as vs
 import Image
@@ -39,7 +39,8 @@ def init(  ):
         name             = name of the object
         mass             = mass in kilogramm [kg]
         radius           = radius in meter [m]
-        tilt             = inclination of the axis [°]
+        tilt             = inclination of the rotational axis [°]
+        precession       = orientation of the rotational axis # now just a sign, later in degree [°]
         rotationPeriod   = rotation period around the objects own axis in days [d]; positive value=clockwise || negative value=counterclockwise
         barycenter       = center of mass around which two or more bodies orbit [now: celestial object; should be coordinates which are automatically detected]
         a                = semi-major axis is one half of the major axis, and thus runs from the centre to the perimeter of the orbit [m]
@@ -48,22 +49,32 @@ def init(  ):
         orbitalDirection = optional: flight direction around the barycenter, default is -1; positive value=clockwise || negative value=counterclockwise
               
     """
-    sun        = Star( name              = "Sun",
-                       mass              = 1.98855 * 10**30,
-                       radius            = 6.957 * 10**8,
-                       tilt              = 0,
-                       rotationPeriod    = 25.05,
-                       barycenter        = (0, 0, 0),
-                       a                 = 0,
-                       e                 = 0,
-                       theta0            = 0,
-                       orbitalDirection  = -1,
-                     )
+    sun = Star(
+        name              = "Sun",
+        mass              = 1.98855 * 10**30,
+        radius            = 6.957 * 10**8,
+        tilt              = 0,
+        precession        = 1, # +1/-1
+        rotationPeriod    = 25.05,
+        barycenter        = (0, 0, 0),
+        a                 = 0,
+        e                 = 0,
+        theta0            = 0,
+        orbitalDirection  = -1,
+    )
 #    mercury    = Planet( "Mercury"   , 3.3011  * 10**23, 2.4397 * 10**6,     58.646,     sun, 5.790905   * 10**10, 0.2056300 )
 #    venus      = Planet( "Venus"     , 4.86750 * 10**24, 6.0518 * 10**6,   -243.025,     sun, 1.08208    * 10**11, 0.0067720 )
-    earth      = Planet( "Earth"     , 5.97237 * 10**24, 6.371  * 10**6, 23.44, 0.99726968,     sun, 1.49598023 * 10**11, 0.0167086 ) # todays eccentricity
-#    earth      = Planet( "Earth"     , 5.97237 * 10**24, 6.371  * 10**6, 0.99726968,     sun, 1.49598023 * 10**11, 0.000055 ) # lowest eccentricity
-#    earth      = Planet( "Earth"     , 5.97237 * 10**24, 6.371  * 10**6, 0.99726968,     sun, 1.49598023 * 10**11, 0.0679   ) # highest eccentricity
+    earth = Planet(
+        name              = "Earth",
+        mass              = 5.97237 * 10**24,
+        radius            = 6.371  * 10**6,
+        tilt              = 23.44, # today: 23.44; min: 22.1; max: 24.5
+        precession        = 1,
+        rotationPeriod    = 0.99726968,
+        barycenter        = sun,
+        a                 = 1.49598023 * 10**11,
+        e                 = 0.0167086 # today: 0.0167086; min: 0.000055; max: 0.0679
+    )
 #    mars       = Planet( "Mars"      , 6.41710 * 10**23, 3.3895 * 10**6,   1.025957,     sun, 2.279392   * 10**11, 0.0934000 )
 #    jupiter    = Planet( "Jupiter"   , 1.89860 * 10**27, 6.9911 * 10**7, 0.41354167,     sun, 7.78299    * 10**11, 0.0484980 )
 #    saturn     = Planet( "Saturn"    , 5.68360 * 10**26, 5.8232 * 10**7,   0.439583,     sun, 1.429      * 10**12, 0.0555500 )
@@ -122,7 +133,7 @@ def init(  ):
 #    moon.model.velocityVector = vs.vector( 0.9,   0,   0)
 
     # ADDING OBJECTS TO THE MODEL
-    model              = expObject
+    model              = eObject()
     model.stars        = [ sun ]
 #    model.stars        = [  ]
     model.planets      = [ earth ]
@@ -136,7 +147,7 @@ def init(  ):
     comparisonList = model.planets
     comparisons = [  ]
     for entry in comparisonList:
-        newObject = Planet( entry.name, entry.mass, entry.radius, 0, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
+        newObject = Planet( entry.name, entry.mass, entry.radius, 0, -entry.precession, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
         newObject.createModel( entry.model.initialPos, entry.model.radius,  material=vs.materials.BlueMarble, ) #color=vs.color.red )
         newObject.model.visible = False # hide the object, so that only its trail is visible
         newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
@@ -146,6 +157,5 @@ def init(  ):
     
     # DISPLAY INFOS OF THE FOLLOWING OBJECTS
     model.observations = [ earth ]
-
 
     return model
