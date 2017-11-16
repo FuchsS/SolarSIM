@@ -31,7 +31,7 @@ class App:
         simulation = Simulation()
         animation  = Scene()
         panel      = ControlPanel( simulation )
-      
+        
         simulation.run( animation, panel )
     
 def main():
