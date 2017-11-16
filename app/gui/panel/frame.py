@@ -42,16 +42,46 @@ class ControlPanel(wx.Frame):
         sb.StatusBar(self)
         sp.SidePanel(self)
 
-        self.SetSize((800, 800))
-        self.SetTitle('SolarSIM')
-        self.Centre()
-        self.Show()
+        self.SetTitle('SolarSIM') # set the title of the frame
+        self.Maximize(True) # maximize the frame
+#        self.SetSize((800, 800)) # set the size of the window
+#        self.Centre() # center the window
+#        self.SetPosition((0,0)) # set a specific position on the screen
+        self.SetIcon( wx.Icon('icons/title.png', wx.BITMAP_TYPE_PNG) ) # set application icon
+        self.Show(True) # display the window
+        
+        # CLOSE ALL WINDOWS ON EXIT
+        self.Bind(wx.EVT_CLOSE, self.OnQuit)
 
 
 
     # EVENTS AND FUNCTIONS
-    def SetRotationRate(self, e, slideBar): # called on slider events
-        self.simulation.ChangeSimulationSpeed( slideBar.GetValue()*5 )
+    def OnSelectStepsize(self, e):
+        print e, 'test'
+        obj = e.GetEventObject()
+        stepSizes = self.sidePanel.controlPanel.stepSizes
+        for label, value in stepSizes:
+            if(label == obj.GetLabel()):
+                print value,' is clicked from Radio Group'
+#                self.simulation.ChangeSimulationSpeed( value )
+#                self.sidePanel.controlPanel.speed.SetLabel( str(value) + "x" )
+#                self.sidePanel.controlPanel.slider.SetValue( value )
+    
+    def OnSelectSpeed(self, e): 
+        obj = e.GetEventObject()
+        speedOptions = self.sidePanel.controlPanel.speedOptions
+        for label, value in speedOptions:
+            if(label == obj.GetLabel()):
+                print value,' is clicked from Radio Group'
+                self.simulation.ChangeSimulationSpeed( value )
+                self.sidePanel.controlPanel.speed.SetLabel( str(value) + "x" )
+                self.sidePanel.controlPanel.slider.SetValue( value )
+      
+    def OnSliderScroll(self, e): # called on slider events
+        obj   = e.GetEventObject()
+        value = obj.GetValue()
+        self.simulation.ChangeSimulationSpeed( value )
+        self.sidePanel.controlPanel.speed.SetLabel( str(value) + "x" )
 
 
     def OnNew(self):
