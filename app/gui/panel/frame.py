@@ -43,10 +43,10 @@ class ControlPanel(wx.Frame):
         sp.SidePanel(self)
 
         self.SetTitle('SolarSIM') # set the title of the frame
-        self.Maximize(True) # maximize the frame
-#        self.SetSize((800, 800)) # set the size of the window
+        self.SetSize((400, 800)) # set the default size of the window
+#        self.Maximize(True) # maximize the frame
 #        self.Centre() # center the window
-#        self.SetPosition((0,0)) # set a specific position on the screen
+        self.SetPosition((0,0)) # set a specific position on the screen
         self.SetIcon( wx.Icon('icons/title.png', wx.BITMAP_TYPE_PNG) ) # set application icon
         self.Show(True) # display the window
         
@@ -57,31 +57,54 @@ class ControlPanel(wx.Frame):
 
     # EVENTS AND FUNCTIONS
     def OnSelectStepsize(self, e):
-        print e, 'test'
         obj = e.GetEventObject()
-        stepSizes = self.sidePanel.controlPanel.stepSizes
-        for label, value in stepSizes:
+        options = self.sidePanel.controlPanel.stepSize_options
+        for label, value in options:
             if(label == obj.GetLabel()):
-                print value,' is clicked from Radio Group'
-#                self.simulation.ChangeSimulationSpeed( value )
-#                self.sidePanel.controlPanel.speed.SetLabel( str(value) + "x" )
-#                self.sidePanel.controlPanel.slider.SetValue( value )
+                print label
+                self.simulation.ChangeSimulationStepsize( value )
     
     def OnSelectSpeed(self, e): 
         obj = e.GetEventObject()
-        speedOptions = self.sidePanel.controlPanel.speedOptions
-        for label, value in speedOptions:
+        options = self.sidePanel.controlPanel.speed_options
+        for label, value in options:
             if(label == obj.GetLabel()):
-                print value,' is clicked from Radio Group'
+                print label
                 self.simulation.ChangeSimulationSpeed( value )
-                self.sidePanel.controlPanel.speed.SetLabel( str(value) + "x" )
+                self.sidePanel.controlPanel.speed.SetLabel( "{}x".format(value) )
                 self.sidePanel.controlPanel.slider.SetValue( value )
-      
+     
+    def OnSelectEccentricity(self, e): 
+        obj = e.GetEventObject()
+        options = self.sidePanel.controlPanel.eccentricity_options
+        for label, value in options:
+            if(label == obj.GetLabel()):
+                print label
+                self.simulation.ChangeOrbitalParameters( eccentricity=value )
+                self.sidePanel.controlPanel.eccentricity.SetLabel( "{:.5f}".format(value) )
+                
+    def OnSelectTilt(self, e): 
+        obj = e.GetEventObject()
+        options = self.sidePanel.controlPanel.tilt_options
+        for label, value in options:
+            if(label == obj.GetLabel()):
+                print label
+                self.simulation.ChangeOrbitalParameters( tilt=value )
+                self.sidePanel.controlPanel.tilt.SetLabel( "{:.2f}".format(value) + unicode('°', 'utf-8') )
+    
+    def OnSelectPrecession(self, e): 
+        obj = e.GetEventObject()
+        options = self.sidePanel.controlPanel.precession_options
+        for label, value in options:
+            if(label == obj.GetLabel()):
+                print value
+                self.simulation.ChangeOrbitalParameters( precession=value )
+    
     def OnSliderScroll(self, e): # called on slider events
         obj   = e.GetEventObject()
         value = obj.GetValue()
         self.simulation.ChangeSimulationSpeed( value )
-        self.sidePanel.controlPanel.speed.SetLabel( str(value) + "x" )
+        self.sidePanel.controlPanel.speed.SetLabel( "{}x".format(value) )
 
 
     def OnNew(self):

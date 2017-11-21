@@ -31,8 +31,8 @@ class StatusBar:
 
         self.window = window
 
-        statusbar = self.window.CreateStatusBar()
-        statusbar.SetStatusText('Ready')
+        statusBar = self.window.CreateStatusBar()
+        statusBar.SetStatusText('Ready')
 
         # Assign to window
-        self.window.statusbar = statusbar
+        self.window.statusBar = statusBar

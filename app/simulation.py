@@ -6,6 +6,7 @@ import math
 from helpers.conversion.time import *
 import model as model
 import visual as vs
+from objects.planet     import Planet
 
 # constants
 DAY  = 86400                           # mean solar day [s]
@@ -47,25 +48,29 @@ class Simulation():
     # ---------------------------------------------------------------------------- 
     def run(self, animation, panel):
         
-        system = model.init(  )
-
-        # Lasting trail
-        for body in system.solarSystem:
-            if body.model.makeTrail:
-                body.model.setMaxTrail( 0.9 * self.stepSize )
+        self.system = model.init(  )
 
         animation = animation.scene.infoLabel
-        sideBar   = panel.sidePanel.infoPanel
+        statusBar = panel.statusBar
+        
         
         t  = self.stepSize
-        dt = self.stepSize
-        
 #        while t <= self.duration:
         while True:
+            dt = self.stepSize
+            system = self.system
+            
+            # Lasting trail
+            for body in system.solarSystem:
+                if body.model.makeTrail:
+                    body.model.setMaxTrail( 0.9 * self.stepSize )
+            
             vs.rate(self.speed)
             
             # PLANETS
-            for planet in system.planets + system.comparisons:
+#            for planet in system.planets + system.comparisons:
+            for planet in system.planets:
+                self.currentObject = planet
                 
                 # DISPLAY INFOS
                 if planet in system.observations:
@@ -73,11 +78,18 @@ class Simulation():
                     r = planet.orbitalDistance/AU
                     I = S/(4 * r**2)
                     J = S/(4 * math.sqrt(1 - planet.e**2))
-#                    sideBar.time.SetLabel( "%.2f days" % (t/DAY) )
-                    sideBar.time.SetLabel( "%.2f years" % (t/DAY/YEAR) )
-                    sideBar.distance.SetLabel( "%.2f AU" % (r) )
-                    sideBar.orbitalVelocity.SetLabel( "%.2f km/s" % (planet.orbitalVelocity/1000) )
-                    sideBar.rotationalVelocity.SetLabel( "%.3f km/s" % (planet.rotationalVelocity/1000) )
+                    statusBar.SetStatusText(
+                        ( "Time: {:.2f} years,"            + "    "
+                          "Distance: {:.2f} AU,"           + "    "
+                          "Orbital velocity: {:.2f} km/s," + "    "
+                          "Rotational velocity: {:.3f} km/s"
+                        ).format(
+                            t/DAY/YEAR,
+                            r,
+                            planet.orbitalVelocity/1000,
+                            planet.rotationalVelocity/1000
+                        )
+                    )
                     # DEBUG
 #                    debug = "%s \t %.14f \t %.14f" % ( t, planet.orbitalAngularVelocity, planet.get_deltaOrbitalAngularPosition( t, dt ) )
                 
@@ -103,7 +115,10 @@ class Simulation():
 #                    debug += "\t %.14f \t %.14f \t %s \t %s" % ( planet.alpha, planet.r, planet.model.pos.x, planet.model.pos.z )
 #                    print( debug.replace( '.', ',' ) )
 
-                
+            for planet in system.comparisons:
+                # ORBIT AROUND THE BARYCENTER
+                planet.orbit( t, dt )
+
             # MOONS
             for moon in system.moons:
 #                moon.orbit( t, dt )
@@ -125,13 +140,68 @@ class Simulation():
                     body.model.rings.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),     # angle in radians [rad]
                                              axis = body.model.rotationalAxis.axis # x, y, z
                                            )
+                    
+            for body in system.comparisons:
+                # Simulate rotation around the objects own axis
+                body.model.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),               # angle in radians [rad]
+                                   axis   = body.model.rotationalAxis.axis # x, y, z
+                                 )
+                # Simulate movement and rotation of the object rings
+                if body.model.rings:
+                    body.model.rings.pos = body.model.pos
+                    body.model.rings.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),     # angle in radians [rad]
+                                             axis = body.model.rotationalAxis.axis # x, y, z
+                                           )
             
             
             # PROGRESS IN TIME
             t += dt
             self.timeStep += 1
 
+#    def ChangeEccentricity(self, value):
+#        self.currentObject.e = value
+        
+    def ChangeOrbitalParameters(self, tilt=False, precession=False, eccentricity=False):
+        this = self.currentObject
+        
+        # Delete the old object (incl. all list entries)
+        for entry in self.system.comparisons:
+            if this.name == entry.name:
+                if tilt == False:
+                    tilt = entry.tilt
+                if precession == False:
+                    precession = entry.precession
+                if eccentricity == False:
+                    eccentricity = entry.e
+                entry.model.visible = False
+                entry.model.axisFrame.visible = False
+                self.system.comparisons.remove(entry)
+                del entry
+        for entry in self.system.observations:
+            if this.name == entry.name:
+                self.system.observations.remove(entry)
+# TO DO: Create a function DeepCopy
+        # Create the new object
+        if tilt == False:
+            tilt = this.tilt
+        if precession == False:
+            precession = this.precession
+        if eccentricity == False:
+            eccentricity = this.e
+        newObject = Planet( this.name, this.mass, this.radius, tilt, precession, this.rotationPeriod, this.barycenter, this.a, eccentricity, this.theta0, this.orbitalDirection )
+        newObject.createModel( this.model.pos, this.model.radius,  material=this.model.material )
+#        newObject.model.a = this.model.a
+#        newObject.model.b = this.model.b
+#        newObject.model.orbitalDirection = this.model.orbitalDirection
+        newObject
+        
+        self.system.comparisons.append(newObject)
+        self.system.observations.append(newObject)
+        
+    
 
-
+    def ChangeSimulationStepsize(self, value):
+        self.stepSize = value
+    
     def ChangeSimulationSpeed(self, value):
-        self.speed = 1 + value
+        self.speed    = value
