@@ -12,9 +12,7 @@
 # Log:
 # 2016/07/05    SF - Datei erzeugt
 ################################
-""" Description:
-    
-    Contains the side panel
+""" Description: Contains the side panel
     
 """
 
@@ -24,9 +22,10 @@ import wx # for widgets
 
 # globals
 width  = 400
-height = 400
+height = 800
 cols = range(20, width,  10)  # Set of columns to align labels and buttons
 rows = range(20, height, 20)  # Set of rows
+row = iter(rows)
 
 
 
@@ -44,7 +43,7 @@ class SidePanel:
         
         # Assign panels to side panel
         self.sidePanel.controlPanel = self._init_controlPanel()
-        self.sidePanel.infoPanel    = self._init_infoPanel()
+#        self.sidePanel.infoPanel    = self._init_infoPanel()
 
         # Assign to window
         self.window.sidePanel       = self.sidePanel
@@ -53,6 +52,7 @@ class SidePanel:
 
     # CONTROL PANEL
     def _init_controlPanel(self):
+# TO DO: Create a class with radio buttons, which have a return value
         controlPanel = wx.Panel( parent=self.window, pos=(0, 0), size=(width, height) )
         
         """
@@ -74,49 +74,67 @@ class SidePanel:
         h2 = wx.Font( pointSize=10, family=wx.DEFAULT, style=wx.NORMAL, weight=wx.NORMAL, underline=True )
         normal = wx.Font( pointSize=10, family=wx.DEFAULT, style=wx.NORMAL, weight=wx.NORMAL, underline=False )
         
-# TO DO: replace index of row throug a row.next()
+        # GENERAL SETTINGS
         # Title
         wx.StaticText( parent=controlPanel, label='General settings', 
-                      pos=(cols[0], rows[0]) ).SetFont( h1 )         
+                       pos=( cols[0], row.next() )
+                     ).SetFont( h1 )
         
-        # SETTINGS: SIMULATION SPEED
-        # Selection of the simulation step size
+        # Skip one line
+        row.next()
+        
+        # SELECTION OF THE SIMULATION STEP SIZE
         wx.StaticBox( parent=controlPanel, label='Simulation step',
-                     pos=(cols[0], rows[2]), size=(200, 80) )
-        stepSizes = [('every hour', 3600), ('every day', 86400)]
-        i = 3
-        for label, value in stepSizes:
-            if (i == 3):
-                wx.RadioButton( parent=controlPanel, label=label,
-                               pos=(cols[1], rows[i]), style=wx.RB_GROUP)
-            else:
-                wx.RadioButton( parent=controlPanel, label=label,
-                               pos=(cols[1], rows[i]))
-            i=i+1
-#        wx.RadioButton( parent=controlPanel, label='every hour',
-#                       pos=(cols[1], rows[3]), style=wx.RB_GROUP)
-#        wx.RadioButton( parent=controlPanel, label='every day',
-#                       pos=(cols[1], rows[4]))
-        self.window.Bind( wx.EVT_RADIOBUTTON, self.window.OnSelectStepsize)
-        controlPanel.stepSizes = stepSizes
+                      pos=( cols[0], row.next() ), size=(200, 80)
+                    ).SetFont( normal )
+        # Create a group of radio buttons
+        radioButtons = []
+        radio1 = wx.RadioButton( parent=controlPanel, label="every hour", style=wx.RB_GROUP)
+        radio2 = wx.RadioButton( parent=controlPanel, label="every day")
+        radioButtons.append(radio1)
+        radioButtons.append(radio2)
+        # Set position for each radio button and setup an event handler
+        for radio in radioButtons:
+            radio.SetPosition( (cols[1], row.next() ) )
+            self.window.Bind( wx.EVT_RADIOBUTTON, self.window.OnSelectStepsize, radio )
+        options = [ (radio1.GetLabel(), 3600), (radio2.GetLabel(), 86400) ]
+        controlPanel.stepSize_options = options
         
-        # Selection of the simulation speed
-        wx.StaticBox(   parent=controlPanel, label='Simulation speed',
-                       pos=(cols[0], rows[7]), size=(200, 160))
-        speedOptions = [('1x', 1), ('5x', 5), ('10x', 10), ('25x', 25),
-                         ('50x', 50), ('100x', 100)]
-        i = 8
-        for label, value in speedOptions:
-            if (i == 8):
-                wx.RadioButton( parent=controlPanel, label=label,
-                               pos=(cols[1], rows[i]), style=wx.RB_GROUP)
-            else:
-                wx.RadioButton( parent=controlPanel, label=label,
-                               pos=(cols[1], rows[i]))
-            i=i+1
-        self.window.Bind( wx.EVT_RADIOBUTTON, self.window.OnSelectSpeed )
-        controlPanel.speedOptions = speedOptions
+        # Skip two lines
+        row.next()
+        row.next()
         
+        # SELECTION OF THE SIMULATION SPEED   
+        wx.StaticBox( parent=controlPanel, label='Simulation speed',
+                      pos=( cols[0], row.next() ), size=(200, 160)
+                    ).SetFont( normal )
+        # Create a group of radio buttons
+        radioButtons = []
+        radio1 = wx.RadioButton( parent=controlPanel, label="1x", style=wx.RB_GROUP)
+        radio2 = wx.RadioButton( parent=controlPanel, label="5x")
+        radio3 = wx.RadioButton( parent=controlPanel, label="10x")
+        radio4 = wx.RadioButton( parent=controlPanel, label="25x")
+        radio5 = wx.RadioButton( parent=controlPanel, label="50x")
+        radio6 = wx.RadioButton( parent=controlPanel, label="100x")
+        radioButtons.append(radio1)
+        radioButtons.append(radio2)
+        radioButtons.append(radio3)
+        radioButtons.append(radio4)
+        radioButtons.append(radio5)
+        radioButtons.append(radio6)
+        # Set position for each radio button and setup an event handler
+        for radio in radioButtons:
+            radio.SetPosition( (cols[1], row.next() ) )
+            self.window.Bind( wx.EVT_RADIOBUTTON, self.window.OnSelectSpeed, radio )
+        options = [ (radio1.GetLabel(), 1),
+                    (radio2.GetLabel(), 5),
+                    (radio3.GetLabel(), 10),
+                    (radio4.GetLabel(), 25),
+                    (radio5.GetLabel(), 50),
+                    (radio6.GetLabel(), 100),
+                  ]
+        controlPanel.speed_options = options
+          
         # Slider to control the speed of the simulation
         controlPanel.slider = wx.Slider( parent=controlPanel, value=1, minValue=1, maxValue=100, 
                   pos=(cols[16], rows[8]), size=(-1, 140), 
@@ -125,29 +143,120 @@ class SidePanel:
         
         # Display the current value
         controlPanel.speed = wx.StaticText( parent=controlPanel, label='1x', 
-                                   pos=(cols[13], rows[11])) 
+                                   pos=(cols[13], rows[11]))
+        
+        # Skip two lines
+        row.next()
+        row.next()
+
+        # ORBITAL SETTINGS
+        # Title
+        wx.StaticText( parent=controlPanel, label='Orbital settings', 
+                       pos=( cols[0], row.next() )
+                     ).SetFont( h1 )
+        
+        # Skip one line
+        row.next()
+        
+        # SELECTION OF THE ECCENTRICITY
+        wx.StaticBox( parent=controlPanel, label='Eccentricity',
+                      pos=( cols[0], row.next() ), size=(200, 80)
+                    ).SetFont( normal )
+        # Create a group of radio buttons
+        radioButtons = []
+        radio1 = wx.RadioButton( parent=controlPanel, label="today", style=wx.RB_GROUP)
+        radio2 = wx.RadioButton( parent=controlPanel, label="min")
+        radio3 = wx.RadioButton( parent=controlPanel, label="max")
+        radioButtons.append(radio1)
+        radioButtons.append(radio2)
+        radioButtons.append(radio3)
+        # Set position for each radio button and setup an event handler
+        for radio in radioButtons:
+            radio.SetPosition( (cols[1], row.next() ) )
+            self.window.Bind( wx.EVT_RADIOBUTTON, self.window.OnSelectEccentricity, radio )
+        options = [ (radio1.GetLabel(), 0.017),
+                    (radio2.GetLabel(), 0.00006),
+                    (radio3.GetLabel(), 0.0679),
+                  ]
+        controlPanel.eccentricity_options = options
+        
+        # Display the current value
+        controlPanel.eccentricity = wx.StaticText( parent=controlPanel, label='0.017', 
+                                   pos=(cols[13], rows[20]))
+        
+        # Skip one line
+        row.next()
+        
+        # SELECTION OF THE AXIAL TILT
+        wx.StaticBox( parent=controlPanel, label='Axial tilt',
+                      pos=( cols[0], row.next() ), size=(200, 80)
+                    ).SetFont( normal )
+        # Create a group of radio buttons
+        radioButtons = []
+        radio1 = wx.RadioButton( parent=controlPanel, label="today", style=wx.RB_GROUP)
+        radio2 = wx.RadioButton( parent=controlPanel, label="min")
+        radio3 = wx.RadioButton( parent=controlPanel, label="max")
+        radioButtons.append(radio1)
+        radioButtons.append(radio2)
+        radioButtons.append(radio3)
+        # Set position for each radio button and setup an event handler
+        for radio in radioButtons:
+            radio.SetPosition( (cols[1], row.next() ) )
+            self.window.Bind( wx.EVT_RADIOBUTTON, self.window.OnSelectTilt, radio )
+        options = [ (radio1.GetLabel(), 23.44),
+                    (radio2.GetLabel(), 22.1),
+                    (radio3.GetLabel(), 24.5),
+                  ]
+        controlPanel.tilt_options = options
+        
+        # Display the current value
+        controlPanel.tilt = wx.StaticText( parent=controlPanel, label='23.44'+unicode('°', 'utf-8'), 
+                                   pos=(cols[13], rows[25]))
+        
+        # Skip one line
+        row.next()
+        
+        # SELECTION OF THE PRECESSION
+        wx.StaticBox( parent=controlPanel, label='Axial precession',
+                      pos=( cols[0], row.next() ), size=(200, 80)
+                    ).SetFont( normal )
+        # Create a group of radio buttons
+        radioButtons = []
+        radio1 = wx.RadioButton( parent=controlPanel, label="today", style=wx.RB_GROUP)
+        radio2 = wx.RadioButton( parent=controlPanel, label="in about 13,000 years")
+        radioButtons.append(radio1)
+        radioButtons.append(radio2)
+        # Set position for each radio button and setup an event handler
+        for radio in radioButtons:
+            radio.SetPosition( (cols[1], row.next() ) )
+            self.window.Bind( wx.EVT_RADIOBUTTON, self.window.OnSelectPrecession, radio )
+        options = [ (radio1.GetLabel(),  1),
+                    (radio2.GetLabel(), -1),
+                  ]
+        controlPanel.precession_options = options
+
 
         return controlPanel      
 
 
 
-    # INFO PANEL
-    def _init_infoPanel(self):
-        infoPanel = wx.Panel( parent=self.window, pos=(0, height), size=(width, height), style=wx.BORDER )
-
-        infoPanel.time               = self.CreateItem( panel=infoPanel, label='Time:',                value='', row=0 )
-        infoPanel.distance           = self.CreateItem( panel=infoPanel, label='Distance:',            value='', row=1 )
-        infoPanel.orbitalVelocity    = self.CreateItem( panel=infoPanel, label='Orbital velocity:',    value='', row=2 )
-        infoPanel.rotationalVelocity = self.CreateItem( panel=infoPanel, label='Rotational velocity:', value='', row=3 )
-
-        return infoPanel     
-
-
-
-    # CREATE STANDARD ITEM
-    def CreateItem(self, panel, label, value, row):
-
-        itemLabel = wx.StaticText( parent=panel, label=label, pos=(cols[0], rows[row]) )
-        itemValue = wx.StaticText( parent=panel, label=value, pos=(cols[1], rows[row]) )
-
-        return itemValue
+#    # INFO PANEL
+#    def _init_infoPanel(self):
+#        infoPanel = wx.Panel( parent=self.window, pos=(0, height), size=(width, height), style=wx.BORDER )
+#
+#        infoPanel.time               = self.CreateItem( panel=infoPanel, label='Time:',                value='', row=0 )
+#        infoPanel.distance           = self.CreateItem( panel=infoPanel, label='Distance:',            value='', row=1 )
+#        infoPanel.orbitalVelocity    = self.CreateItem( panel=infoPanel, label='Orbital velocity:',    value='', row=2 )
+#        infoPanel.rotationalVelocity = self.CreateItem( panel=infoPanel, label='Rotational velocity:', value='', row=3 )
+#
+#        return infoPanel     
+#
+#
+#
+#    # CREATE STANDARD ITEM
+#    def CreateItem(self, panel, label, value, row):
+#
+#        itemLabel = wx.StaticText( parent=panel, label=label, pos=(cols[0], rows[row]) )
+#        itemValue = wx.StaticText( parent=panel, label=value, pos=(cols[1], rows[row]) )
+#
+#        return itemValue

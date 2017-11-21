@@ -27,10 +27,10 @@ class Particle( vs.sphere ):
         """
         tilt = math.radians(body.tilt)
         precession = body.precession
-        vs.sphere.__init__( self, pos=pos, radius=radius, axis=vs.vector( math.cos(tilt), precession * math.sin(tilt), 0), color=color, make_trail=False )
+        vs.sphere.__init__( self, pos=vs.vector(pos), radius=radius, axis=vs.vector( math.cos(tilt), precession * math.sin(tilt), 0), color=color, make_trail=False )
         self.body       = body
         self.makeTrail  = makeTrail
-        self.initialPos = pos
+        self.initialPos = vs.vector(pos)
         
         # ADD A ROTATIONAL AXIS
         self.axisFrame = vs.frame(pos=pos)        
@@ -78,7 +78,7 @@ class Particle( vs.sphere ):
 
 
 
-    # METHODES
+    # METHODES   
     def setMaxTrail( self, stepSize ):
         period            = self.body.orbitalPeriod
         stepsForOnePeriod = (period/stepSize)
