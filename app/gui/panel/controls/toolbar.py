@@ -32,11 +32,14 @@ class ToolBar:
         self.window = window
         toolbar  = self.window.CreateToolBar( style=( wx.TB_HORZ_LAYOUT | wx.TB_TEXT ) )
 
-        self.CreateItem( toolbar=toolbar, id=wx.ID_EXIT, name='&Quit', icon='icons/exit.png', event=self.window.OnQuit)
-        toolbar.AddSeparator()
-        self.CreateItem( toolbar=toolbar, id=wx.ID_NEW,  name='&New',  icon='icons/new.png',  event=self.window.OnNew , info='New simulation run')
-        self.CreateItem( toolbar=toolbar, id=wx.ID_OPEN, name='&Open', icon='icons/open.png', event=self.window.OnOpen, info="Open saved settings")
-        self.CreateItem( toolbar=toolbar, id=wx.ID_SAVE, name='&Save', icon='icons/save.png', event=self.window.OnSave, info="Save current settings")
+#        self.CreateItem( toolbar=toolbar, id=wx.ID_EXIT, name='&Quit', icon='icons/exit.png', event=self.window.OnQuit)
+#        toolbar.AddSeparator()
+#        self.CreateItem( toolbar=toolbar, id=wx.ID_NEW,  name='&New',  icon='icons/new.png',  event=self.window.OnNew , info='New simulation run')
+#        self.CreateItem( toolbar=toolbar, id=wx.ID_OPEN, name='&Open', icon='icons/open.png', event=self.window.OnOpen, info="Open saved settings")
+#        self.CreateItem( toolbar=toolbar, id=wx.ID_SAVE, name='&Save', icon='icons/save.png', event=self.window.OnSave, info="Save current settings")
+        self.CreateItem( toolbar=toolbar, id=wx.ID_ANY, name='&Start', icon='icons/start.png', event=self.window.OnStart, info='Start simulation')
+#        self.CreateItem( toolbar=toolbar, id=1000, name='&Pause', icon='icons/pause.png', event=self.window.OnPause, info='Pause simulation')
+        self.CreateItem( toolbar=toolbar, id=wx.ID_ANY, name='&Stop' , icon='icons/stop.png',  event=self.window.OnStop , info='Stop simulation')
         toolbar.Realize()
 
         # Assign to window

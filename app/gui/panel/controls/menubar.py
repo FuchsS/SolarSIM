@@ -47,9 +47,9 @@ class MenuBar:
     def _init_fileMenu(self):
         fileMenu = wx.Menu()
         
-        self.CreateMenuItem( menu=fileMenu, id=wx.ID_NEW,  name='&New',  shortcut='Ctrl+N', icon='icons/new.png',  event=self.window.OnNew , info='New simulation run')
-        self.CreateMenuItem( menu=fileMenu, id=wx.ID_OPEN, name='&Open', shortcut='Ctrl+O', icon='icons/open.png', event=self.window.OnOpen, info="Open saved settings")
-        self.CreateMenuItem( menu=fileMenu, id=wx.ID_SAVE, name='&Save', shortcut='Ctrl+S', icon='icons/save.png', event=self.window.OnSave, info="Save current settings")
+#        self.CreateMenuItem( menu=fileMenu, id=wx.ID_NEW,  name='&New',  shortcut='Ctrl+N', icon='icons/new.png',  event=self.window.OnNew , info='New simulation run')
+#        self.CreateMenuItem( menu=fileMenu, id=wx.ID_OPEN, name='&Open', shortcut='Ctrl+O', icon='icons/open.png', event=self.window.OnOpen, info="Open saved settings")
+#        self.CreateMenuItem( menu=fileMenu, id=wx.ID_SAVE, name='&Save', shortcut='Ctrl+S', icon='icons/save.png', event=self.window.OnSave, info="Save current settings")
         fileMenu.AppendSeparator()
         self.CreateMenuItem( menu=fileMenu, id=wx.ID_EXIT, name='&Quit', shortcut='Ctrl+Q', icon='icons/exit.png', event=self.window.OnQuit)
 

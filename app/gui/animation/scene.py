@@ -40,23 +40,45 @@ class Scene:
 #                            ambient = vs.color.white,                                     # color of the ambient light (= bright light, hardly any shadows)
                             center  = (10, 0, 0),                                          # location at which the camera looks
 #                            forward = (0, 0, -1),                                         # camera direction
-                            range   = 5                                                    # zoom to the location
+                            range   = 5,                                                    # zoom to the location
+                            sceneb = False
                           )
-        scene.infoLabel = vs.label( pos = vs.vector(-5.5, 5.5, 0),
-                                    border = 1,
-                                    box = 0,
-                                    opacity = 0,
-                                    text = "",
-                                    visible = False
-                                  )
+#        scene.infoLabel = vs.label( pos = vs.vector(-5.5, 5.5, 0),
+#                                    border = 1,
+#                                    box = 0,
+#                                    opacity = 0,
+#                                    text = "",
+#                                    visible = False
+#                                  )
 
         # Assign to window
         self.scene = scene
 
+        self.isPaused = False
+        
         # Event handler
-        self.scene.bind('click', self.OnClick)
+        self.scene.bind('click',   self.OnClick) # click event
+        self.scene.bind('keydown', self.OnKeyPress) # key pressed event
 
+    
     # EVENTS
     def OnClick(self, e):
         scene = self.scene
         scene.center = scene.mouse.pos # focus camera on new position
+        
+    # Handler of a key pressed event
+    def OnKeyPress(self, event):
+        keycode = event.key
+        print keycode
+        if keycode == ' ': # spacebar pressed => Pause/Resume
+            self.OnPause('keydown spacebar')
+    
+    # Spacebar pressed => Pause/Resume
+    def OnPause(self, event):
+        self.isPaused = not self.isPaused
+        while self.isPaused:
+            self.scene.waitfor('keydown')
+    
+    
+    
+    
