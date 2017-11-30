@@ -122,7 +122,7 @@ def init(  ):
     sun.createModel    ( (0, 0, 0), 1, color=vs.color.white, texture='./textures/sun.jpg', makeTrail=False)
 #    mercury.createModel( (3.87, 0, 0),  0.3, texture='./textures/mercury.jpg')
 #    venus.createModel  ( (7.23, 0, 0),  0.4, texture='./textures/venus.jpg'  )
-    earth.createModel  ( (10, 0, 0),  0.5, material=vs.materials.BlueMarble)
+    earth.createModel  ( (10, 0, 0),  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
 #    mars.createModel   ( (15.24, 0, 0), 0.45, texture='./textures/mars.jpg'   )
 #    jupiter.createModel( (52.03, 0, 0),  0.8, texture='./textures/jupiter.jpg', rings='./textures/jupiters rings.png')
 #    saturn.createModel ( (95.52, 0, 0),  0.7, texture='./textures/saturn.jpg' , rings='./textures/saturns rings.png' )
@@ -153,7 +153,7 @@ def init(  ):
 #        newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
 #        comparisons.append(newObject)
     model.comparisons = comparisons
-    model.solarSystem += model.comparisons
+#    model.solarSystem += model.comparisons
     
     # DISPLAY INFOS OF THE FOLLOWING OBJECTS
     model.observations = [ earth ]

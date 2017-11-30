@@ -28,11 +28,12 @@ class App:
   
     def __init__(self, *args, **kwargs):
 
-        simulation = Simulation()
-        animation  = Scene()
-        panel      = ControlPanel( simulation )
-        
-        simulation.run( animation, panel )
+#        simulation = Simulation()
+#        animation  = Scene()
+#        panel      = ControlPanel( simulation, animation )
+#        simulation.run( animation, panel )
+        panel      = ControlPanel(  )
+
     
 def main():
     app = wx.App()

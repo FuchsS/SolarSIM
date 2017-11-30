@@ -17,13 +17,17 @@
     Contains the UI
     
 """
-
+import visual as vs
 import wx                   # for widgets
 
 import controls.menubar   as mb      # for the menu bar
 import controls.toolbar   as tb      # for the toolbar
 import controls.sidepanel as sp      # for the side panel
 import controls.statusbar as sb      # for the status bar
+from simulation import Simulation           # for the simulation
+from gui.animation.scene import Scene       # for the animation
+import time
+import multiprocessing
 
 class ControlPanel(wx.Frame):
     """ Beschreibung:
@@ -33,9 +37,10 @@ class ControlPanel(wx.Frame):
     """
     
     # CONSTRUCTOR
-    def __init__(self, simulation, *args, **kwargs):
+    def __init__(self,  *args, **kwargs):
         wx.Frame.__init__(self, None)
-        self.simulation = simulation
+#        self.simulation = simulation
+#        self.animation  = animation
 
         mb.MenuBar(self)
         tb.ToolBar(self)
@@ -54,18 +59,17 @@ class ControlPanel(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnQuit)
 
 
-
     # EVENTS AND FUNCTIONS
-    def OnSelectStepsize(self, e):
-        obj = e.GetEventObject()
+    def OnSelectStepsize(self, event):
+        obj = event.GetEventObject()
         options = self.sidePanel.controlPanel.stepSize_options
         for label, value in options:
             if(label == obj.GetLabel()):
                 print label
                 self.simulation.ChangeSimulationStepsize( value )
     
-    def OnSelectSpeed(self, e): 
-        obj = e.GetEventObject()
+    def OnSelectSpeed(self, event): 
+        obj = event.GetEventObject()
         options = self.sidePanel.controlPanel.speed_options
         for label, value in options:
             if(label == obj.GetLabel()):
@@ -100,35 +104,46 @@ class ControlPanel(wx.Frame):
                 print value
                 self.simulation.ChangeOrbitalParameters( precession=value )
     
-    def OnSliderScroll(self, e): # called on slider events
-        obj   = e.GetEventObject()
+    def OnSliderScroll(self, event): # called on slider events
+        obj   = event.GetEventObject()
         value = obj.GetValue()
         self.simulation.ChangeSimulationSpeed( value )
         self.sidePanel.controlPanel.speed.SetLabel( "{}x".format(value) )
 
 
-    def OnNew(self):
-        pass
-        
+    def OnStart(self, event):
+        self.animation  = Scene()
+        self.simulation = Simulation()
+        self.simulation.run(self.animation, self)
+                
 
-    def OnOpen(self):
-        pass
-
-        
-    def OnSave(self):
-        pass
+    def OnStop(self, event):
+        try:
+            self.simulation.stop()
+            self.animation.scene.delete()
+        except AttributeError:
+            pass
     
             
-    def OnQuit(self, e):
-        wx.Exit()
+    def OnQuit(self, event):
+        try:
+            self.OnStop(wx.EVT_CLOSE);
+        except AttributeError:
+            pass
+        try:
+            if (self.simulation.isStopped == True):
+                wx.Exit()
+        except AttributeError:
+            wx.Exit()
 
 
-    def OnAbout(self):
+    def OnAbout(self, event):
     	pass
     	
 
-    def OnHelp(self):
+    def OnHelp(self, event):
         pass
+    
 
     def ToggleStatusbar(self, e):
         if self.showStatusbar.IsChecked():

@@ -35,7 +35,7 @@ settings = {
 class Simulation():
     def __init__(self, *args, **kwargs):
         
-
+        self.system = model.init(  )
 
         # getSettings
         self.duration = settings['duration']
@@ -48,15 +48,14 @@ class Simulation():
     # ---------------------------------------------------------------------------- 
     def run(self, animation, panel):
         
-        self.system = model.init(  )
-
-        animation = animation.scene.infoLabel
         statusBar = panel.statusBar
         
-        
         t  = self.stepSize
-#        while t <= self.duration:
-        while True:
+
+        self.isPaused  = False
+        self.isStopped = False
+        self.running   = True
+        while self.running:
             dt = self.stepSize
             system = self.system
             
@@ -157,9 +156,16 @@ class Simulation():
             # PROGRESS IN TIME
             t += dt
             self.timeStep += 1
+        
+        self.isStopped = True
 
 #    def ChangeEccentricity(self, value):
 #        self.currentObject.e = value
+
+
+    def stop(self):
+        self.running = False
+        
         
     def ChangeOrbitalParameters(self, tilt=False, precession=False, eccentricity=False):
         this = self.currentObject
