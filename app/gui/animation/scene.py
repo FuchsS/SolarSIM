@@ -41,7 +41,6 @@ class Scene:
                             center  = (10, 0, 0),                                          # location at which the camera looks
 #                            forward = (0, 0, -1),                                         # camera direction
                             range   = 5,                                                    # zoom to the location
-                            sceneb = False
                           )
 #        scene.infoLabel = vs.label( pos = vs.vector(-5.5, 5.5, 0),
 #                                    border = 1,
@@ -69,7 +68,7 @@ class Scene:
     # Handler of a key pressed event
     def OnKeyPress(self, event):
         keycode = event.key
-        print keycode
+#        print keycode
         if keycode == ' ': # spacebar pressed => Pause/Resume
             self.OnPause('keydown spacebar')
     
