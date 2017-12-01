@@ -1,0 +1,2 @@
+conda install wxpython
+conda install -c mwcraig vpython

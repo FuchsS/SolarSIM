@@ -119,10 +119,15 @@ class ControlPanel(wx.Frame):
 
     def OnStop(self, event):
         try:
-            self.simulation.stop()
-            self.animation.scene.delete()
+            self.simulation.stop()        
         except AttributeError:
             pass
+# Bug!!!         
+#        # Close any opened scence
+#        try:
+#            self.animation.scene.delete()
+#        except AttributeError:
+#            pass
     
             
     def OnQuit(self, event):
