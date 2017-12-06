@@ -1,38 +1,18 @@
 # -*- coding: utf-8 -*-
 
-#############################
-# Module:   StatusBar
-# Author:   S.Fuchs
-# Date:     2016/07/05
-# Version:  Entwurf 0.1
-#
-# Beschreibung: Menubar
-#
-###############################
-# Log:
-# 2016/07/05    SF - Datei erzeugt
-################################
-""" Description:
-    
-    Contains the statusbar
-    
-"""
-
-import wx # for widgets
-
-class StatusBar:
+def CreateStatusBar(self):
     """ 
-        ...
+    Creates the status bar.
+    
+    Creates a wx.StatusBar for a wx.Frame.
+    
+    Parameters:
+        
+        self    - wx.Frame
         
     """
+    # Get a new toolbar instance
+    statusBar = self.CreateStatusBar()
+    statusBar.SetStatusText('Ready')
     
-    # CONSTRUCTOR
-    def __init__(self, window):
-
-        self.window = window
-
-        statusBar = self.window.CreateStatusBar()
-        statusBar.SetStatusText('Ready')
-
-        # Assign to window
-        self.window.statusBar = statusBar
+    return statusBar

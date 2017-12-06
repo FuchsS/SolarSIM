@@ -27,32 +27,47 @@ class Scene:
     """
     
     # CONSTRUCTOR
-    def __init__(self):
+    def __init__(self, title, x, y, width, height, center):
+        """
+        Initialise the scene.
+        
+        __init__(self, redirect=False, filename=None, useBestVisual=False, clearSigInt=True, processes=[ ], taskQueue=[ ], doneQueue=[ ], tasks=[ ])
+            
+            Parameters:
 
-        # 3D scene
-        scene = vs.display( title   = "SolarSIM",                                         # title of the window
-                            fullscreen = True,                                            # full screen option
-                            x       = 0,                                                  # x-position of the window on the screen (pixels from upper left)
-                            y       = 0,                                                  # y-position of the window on the screen (pixels from upper left)
-                            lights  = [],                                                 # deactivates distant default light sources
-#                            ambient = 0,                                                 # color of the ambient light (0=no ambient ligt, with realistic shadows)
-                            ambient = vs.color.gray(0.6),                                 # compromise
-#                            ambient = vs.color.white,                                     # color of the ambient light (= bright light, hardly any shadows)
-                            center  = (10, 0, 0),                                          # location at which the camera looks
-#                            forward = (0, 0, -1),                                         # camera direction
-                            range   = 5,                                                    # zoom to the location
-                          )
-#        scene.infoLabel = vs.label( pos = vs.vector(-5.5, 5.5, 0),
-#                                    border = 1,
-#                                    box = 0,
-#                                    opacity = 0,
-#                                    text = "",
-#                                    visible = False
-#                                  )
+                title         - Text in the window's title bar.                
+                x, y          - Position of the window on the screen (pixels from upper left).
+                width, height - Width and height of the display area in pixels.
+    !BUG!       fullscreen    - Full screen option. Makes the display take up the entire screen.
+                visible       - Make sure the display is visible.
+                ...
+                lights        - List of distant light objects created for this display.
+                ambient       - Color of nondirectional ("ambient") lighting.
+                ...
+                center        - Location at which the camera continually looks, even as the user rotates the position of the camera.
+                forward       - Vector pointing in the same direction as the camera looks.
+                range         - The extent of the region of interest away from center along each axis.
+                ...
+    
+        """
 
-        # Assign to window
-        self.scene = scene
+        # Create a 3D animation scene
+        self.scene = vs.display(
+            title   = title,
+            x       = x,
+            y       = y,
+            width   = width,
+            height  = height,
+#            fullscreen = True, # BUG: In full screen mode, the simulation can not be stopped without crashing.
+            lights  = [],
+#            ambient = 0, # color of the ambient light (0=no ambient light, with realistic shadows)
+#            ambient = vs.color.gray(0.6), # compromise
+#            ambient = vs.color.white, # color of the ambient light (= bright light, hardly any shadows)
+            center  = center,
+            range   = 5,
+        )
 
+        # Set some program flags
         self.isPaused = False
         
         # Event handler
@@ -77,7 +92,3 @@ class Scene:
         self.isPaused = not self.isPaused
         while self.isPaused:
             self.scene.waitfor('keydown')
-    
-    
-    
-    

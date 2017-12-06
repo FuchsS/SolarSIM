@@ -14,31 +14,45 @@
 ################################
 """ Description:
     
-    Contains the main program
+    Contains the main program.
+        Call sequence: App -> ControlWindow -> "Start" -> Simulation -> Model & Animation
     
 """
 
 import wx                                   # for widgets
+from   gui.panel.frame import ControlWindow # for the control window
 
-from simulation import Simulation           # for the simulation
-from gui.animation.scene import Scene       # for the animation
-from gui.panel.frame import ControlPanel    # for the control panel
 
-class App:
-  
-    def __init__(self, *args, **kwargs):
+class App(wx.App):
+    """
+    Initialise the App.
+        
+    __init__(self, redirect=False, filename=None, useBestVisual=False, clearSigInt=True)
+    
+    Parameters:	
 
-#        simulation = Simulation()
-#        animation  = Scene()
-#        panel      = ControlPanel( simulation, animation )
-#        simulation.run( animation, panel )
-        panel      = ControlPanel(  )
+        redirect (bool)      – Should error messages (sys.stdout and sys.stderr) be redirected? Specify a filename to redirect the error messages to a file.
+        filename (string)    – The name of a file to redirect output to, if redirect is True.
+        useBestVisual (bool) – Should the app try to use the best available visual provided by the system (only relevant on systems that have more than one visual).
+        clearSigInt (bool)   – Should SIGINT be cleared? This allows the app to terminate upon a Ctrl-C in the console like other GUI apps will.
+
+    """
+    def __init__(self, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
+        
+        wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
+        
+    
+    def OnInit(self):
+        """
+        Initialise the app with a control window.
+        """
+        self.frame = ControlWindow(None, id=wx.ID_ANY, title='SolarSIM')
+        self.frame.Show(True) # display the window
+        return True
 
     
-def main():
-    app = wx.App()
-    App()
-    app.MainLoop() 
-
-if __name__ == '__main__':
-    main()
+if __name__ == '__main__':     
+    # Create the app
+    app = App(redirect=False, filename='SolarSim.stderr.log')
+    app.MainLoop()
+    
