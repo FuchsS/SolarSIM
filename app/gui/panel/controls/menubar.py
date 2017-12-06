@@ -51,7 +51,7 @@ class MenuBar:
 #        self.CreateMenuItem( menu=fileMenu, id=wx.ID_OPEN, name='&Open', shortcut='Ctrl+O', icon='icons/open.png', event=self.window.OnOpen, info="Open saved settings")
 #        self.CreateMenuItem( menu=fileMenu, id=wx.ID_SAVE, name='&Save', shortcut='Ctrl+S', icon='icons/save.png', event=self.window.OnSave, info="Save current settings")
         fileMenu.AppendSeparator()
-        self.CreateMenuItem( menu=fileMenu, id=wx.ID_EXIT, name='&Quit', shortcut='Ctrl+Q', icon='icons/exit.png', event=self.window.OnQuit)
+        self.CreateMenuItem( menu=fileMenu, id=wx.ID_EXIT, name='&Quit', shortcut='Ctrl+Q', icon='icons/exit.png', event=self.window.OnClose)
 
         return fileMenu
 

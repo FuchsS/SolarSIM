@@ -2,11 +2,13 @@
 
 from __future__ import division
 import math
-
+import wx
+from gui.animation.scene import Scene       # for the animation
 from helpers.conversion.time import *
 import model as model
 import visual as vs
 from objects.planet     import Planet
+from helpers.namer import fn_namer
 
 # constants
 DAY  = 86400                           # mean solar day [s]
@@ -31,11 +33,14 @@ settings = {
     }
 
 
-
 class Simulation():
-    def __init__(self, *args, **kwargs):
+
+    def __init__(self, panel):
+        self.panel      = panel
         
-        self.system = model.init(  )
+        # Creates the animation
+        self.animation = Scene(title="SolarSIM", x=400, y=0, width=800, height=800, center=(10, 0, 0) ).scene
+        self.system = model.init()
 
         # getSettings
         self.duration = settings['duration']
@@ -45,14 +50,14 @@ class Simulation():
 
     # ----------------------------------------------------------------------------
     # RUN SIMULATION                     
-    # ---------------------------------------------------------------------------- 
-    def run(self, animation, panel):
+    # ----------------------------------------------------------------------------
+    @fn_namer
+    def runSimulation(self):
         
-        statusBar = panel.statusBar
+        statusBar = self.panel.statusBar
         
         t  = self.stepSize
 
-        self.isPaused  = False
         self.isStopped = False
         self.running   = True
         while self.running:
@@ -69,6 +74,11 @@ class Simulation():
             # PLANETS
 #            for planet in system.planets + system.comparisons:
             for planet in system.planets:
+                
+                # Checks if the simulation should be stopped in between
+                if(not self.running):
+                    break
+                
                 self.currentObject = planet
                 
                 # DISPLAY INFOS
@@ -158,15 +168,22 @@ class Simulation():
             self.timeStep += 1
         
         self.isStopped = True
+        # Cleaning up
+        wx.CallAfter(self.cleanupSimulation)
 
-#    def ChangeEccentricity(self, value):
-#        self.currentObject.e = value
 
-
-    def stop(self):
+    @fn_namer
+    def stopSimulation(self):
         self.running = False
+
+
+    @fn_namer
+    def cleanupSimulation(self):
+        # Deletes the animation
+        self.animation.delete()
         
-        
+    
+    @fn_namer
     def ChangeOrbitalParameters(self, tilt=False, precession=False, eccentricity=False):
         this = self.currentObject
         
@@ -205,9 +222,11 @@ class Simulation():
         self.system.observations.append(newObject)
         
     
-
+    @fn_namer
     def ChangeSimulationStepsize(self, value):
         self.stepSize = value
     
+    
+    @fn_namer
     def ChangeSimulationSpeed(self, value):
         self.speed    = value
