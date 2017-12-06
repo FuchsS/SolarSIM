@@ -33,9 +33,9 @@ settings = {
     }
 
 
-class Simulation():
+class Simulation:
 
-    def __init__(self, panel):
+    def __init__(self, panel, stepSize):
         self.panel      = panel
         
         # Creates the animation
@@ -44,7 +44,7 @@ class Simulation():
 
         # getSettings
         self.duration = settings['duration']
-        self.stepSize = settings['stepSize']
+        self.stepSize = stepSize
         self.speed    = settings['speed']
         self.timeStep = 0
 

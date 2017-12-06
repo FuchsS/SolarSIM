@@ -27,7 +27,7 @@ from simulation import Simulation           # for the simulation
 from helpers.namer import fn_namer
     
 
-class ControlWindow(wx.Frame, object):
+class ControlWindow(wx.Frame):
     """
     Construct a wx.Frame object.
 
@@ -51,10 +51,9 @@ class ControlWindow(wx.Frame, object):
         
         # Create the panel, sizer and controls
         mb.MenuBar(self)
-        self.toolbar = tb.CreateToolBar(self)
-        self.statusBar = sb.CreateStatusBar(self)
+        self.toolbar      = tb.CreateToolBar(self)
+        self.statusBar    = sb.CreateStatusBar(self)
         self.controlPanel = cp.CreateControlPanel(self)
-#        cp.ControlPanel(self)
 
         # Close all windows on exit
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -74,8 +73,18 @@ class ControlWindow(wx.Frame, object):
         self.toolbar.EnableTool(startButtonId, False)
         self.toolbar.EnableTool(stopButtonId, True)
         
-        # Starts the simulation
-        self.simulation = Simulation(self) # Creates a new simulation instance
+        # GET SIMULATION SETTINGS
+        # Get StepSize option
+        options = self.controlPanel.stepSize_options
+        for button, label, value in options:
+            if( button.GetValue() ):
+                print( "stepSize: {}".format( label ) )
+                stepSize = value
+                self.controlPanel.speed.SetLabel( "{}x".format(value) )
+                self.controlPanel.slider.SetValue( value )
+        
+        # Starts the simulation with simulation settings
+        self.simulation = Simulation(self, stepSize) # Creates a new simulation instance
         self.simulation.runSimulation() # Starts the simulation
         
 
@@ -114,14 +123,14 @@ class ControlWindow(wx.Frame, object):
 #------------------------------------------------------------------------------
 
     # EVENTS AND FUNCTIONS
-    @fn_namer
-    def OnSelectStepsize(self, event):
-        obj = event.GetEventObject()
-        options = self.controlPanel.stepSize_options
-        for label, value in options:
-            if(label == obj.GetLabel()):
-                print label
-                self.simulation.ChangeSimulationStepsize( value )
+#    @fn_namer
+#    def OnSelectStepsize(self, event):
+#        obj = event.GetEventObject()
+#        options = self.controlPanel.stepSize_options
+#        for label, value in options:
+#            if(label == obj.GetLabel()):
+#                print label
+#                self.simulation.ChangeSimulationStepsize( value )
     
     
     @fn_namer
