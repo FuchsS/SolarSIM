@@ -17,52 +17,47 @@ S    = 1367                            # so called solar constant at a distance 
 AU   = 1.49598023 * 10**11             # astronomical unit: length of the semi-major axis [m]
 
 
-settings = {
-    'duration' : 3/3*YEAR * DAY,
-#    'duration' : 88 * DAY,
-#    'stepSize' : timeHoursSeconds(10000,0,0,0),
-#    'stepSize' : 21600, # 1461 Schritte auf 1 Jahr (geht genau auf!)
-#    'stepSize' : DAY,
-    'stepSize' : 3600,
-#    'stepSize' : 1800,
-#    'stepSize' : 60,
-#    'stepSize' : 1,
-    'speed'    : 1,
-#    'speed'    : 10000000000000000000000000000,
-#    'speed'    : 1
-    }
-
-
 class Simulation:
 
-    def __init__(self, panel, stepSize):
+    def __init__(self, panel, stepSize, speed, eccentricity, tilt, precession):
         self.panel      = panel
         
         # Creates the animation
         self.animation = Scene(title="SolarSIM", x=400, y=0, width=800, height=800, center=(10, 0, 0) ).scene
         self.system = model.init()
 
-        # getSettings
-        self.duration = settings['duration']
-        self.stepSize = stepSize
-        self.speed    = settings['speed']
-        self.timeStep = 0
+        # Set settings
+        self.stepSize     = stepSize
+        self.speed        = speed
+        self.eccentricity = eccentricity
+        self.tilt         = tilt
+        self.precession   = precession
 
     # ----------------------------------------------------------------------------
     # RUN SIMULATION                     
     # ----------------------------------------------------------------------------
     @fn_namer
     def runSimulation(self):
+        print( "Simulation settings:")
+        print( "• stepSize: {} seconds".format( self.stepSize ) )
+        print( "• speed: {}".format( "{}x".format( self.speed ) ) )
+        print( "Orbital settings:")
+        print( "• eccentricity: {:f}".format( self.eccentricity ).rstrip('0') )
+        print( "• tilt: {:.2f}°".format( self.tilt ) )
+        print( "• precession: {}".format( self.precession ) )
+        
+        self.ChangeOrbitalParameters(old=self.system.observation, eccentricity=self.eccentricity, tilt=self.tilt, precession=self.precession )
         
         statusBar = self.panel.statusBar
         
         t  = self.stepSize
+        timeStep = 0
+        system = self.system
 
         self.isStopped = False
         self.running   = True
         while self.running:
             dt = self.stepSize
-            system = self.system
             
             # Lasting trail
             for body in system.solarSystem:
@@ -82,7 +77,7 @@ class Simulation:
                 self.currentObject = planet
                 
                 # DISPLAY INFOS
-                if planet in system.observations:
+                if planet == system.observation:
 
                     r = planet.orbitalDistance/AU
                     I = S/(4 * r**2)
@@ -118,11 +113,6 @@ class Simulation:
                     print( "· traveled distance: %.2f km" % (planet.distance/1000) )
                     print( "· mean velocity: %.2f km/s" % (planet.meanVelocity/( t/dt )/1000) )
                                     
-                    
-                
-#                if planet in system.observations:
-#                    debug += "\t %.14f \t %.14f \t %s \t %s" % ( planet.alpha, planet.r, planet.model.pos.x, planet.model.pos.z )
-#                    print( debug.replace( '.', ',' ) )
 
             for planet in system.comparisons:
                 # ORBIT AROUND THE BARYCENTER
@@ -165,7 +155,7 @@ class Simulation:
             
             # PROGRESS IN TIME
             t += dt
-            self.timeStep += 1
+            timeStep += 1
         
         self.isStopped = True
         # Cleaning up
@@ -184,42 +174,45 @@ class Simulation:
         
     
     @fn_namer
-    def ChangeOrbitalParameters(self, tilt=False, precession=False, eccentricity=False):
-        this = self.currentObject
-        
-        # Delete the old object (incl. all list entries)
-        for entry in self.system.comparisons:
-            if this.name == entry.name:
-                if tilt == False:
-                    tilt = entry.tilt
-                if precession == False:
-                    precession = entry.precession
-                if eccentricity == False:
-                    eccentricity = entry.e
-                entry.model.visible = False
-                entry.model.axisFrame.visible = False
-                self.system.comparisons.remove(entry)
-                del entry
-        for entry in self.system.observations:
-            if this.name == entry.name:
-                self.system.observations.remove(entry)
+    def ChangeOrbitalParameters(self, old, tilt=False, precession=False, eccentricity=False):
+
 # TO DO: Create a function DeepCopy
-        # Create the new object
-        if tilt == False:
-            tilt = this.tilt
-        if precession == False:
-            precession = this.precession
-        if eccentricity == False:
-            eccentricity = this.e
-        newObject = Planet( this.name, this.mass, this.radius, tilt, precession, this.rotationPeriod, this.barycenter, this.a, eccentricity, this.theta0, this.orbitalDirection )
-        newObject.createModel( this.model.pos, this.model.radius,  material=this.model.material )
-#        newObject.model.a = this.model.a
-#        newObject.model.b = this.model.b
-#        newObject.model.orbitalDirection = this.model.orbitalDirection
-        newObject
+        # Create a new object
+        if not tilt:
+            tilt         = old.tilt
+        if not precession:
+            precession   = old.precession
+        if not eccentricity:
+            eccentricity = old.e
+        new = Planet(
+            old.name,
+            old.mass,
+            old.radius,
+            tilt, # new value
+            precession, # new value
+            old.rotationPeriod,
+            old.barycenter,
+            old.a,
+            eccentricity, # new value
+            old.theta0,
+            old.orbitalDirection
+        )
+        new.createModel(
+            old.model.pos,
+            old.model.radius, 
+            material=old.model.material
+        )
+			
+        # Delete all list entries of the old object and create entries for the new object
+        for aList in [self.system.stars, self.system.planets, self.system.moons, self.system.solarSystem, self.system.comparisons]:
+            if old in aList:
+                aList.remove(old)
+                aList.append(new)
         
-        self.system.comparisons.append(newObject)
-        self.system.observations.append(newObject)
+        # Delete the old object itself
+        old.model.visible = False
+        old.model.axisFrame.visible = False
+        del old
         
     
     @fn_namer

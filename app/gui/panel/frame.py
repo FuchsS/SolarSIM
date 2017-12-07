@@ -56,9 +56,7 @@ class ControlWindow(wx.Frame):
         self.controlPanel = cp.CreateControlPanel(self)
 
         # Close all windows on exit
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-        # Set some program flags
+        self.Bind(wx.EVT_CLOSE, self.OnClose)        
 
 #------------------------------------------------------------------------------
 
@@ -72,21 +70,42 @@ class ControlWindow(wx.Frame):
         stopButtonId  = self.toolbar.stopButton.GetId()
         self.toolbar.EnableTool(startButtonId, False)
         self.toolbar.EnableTool(stopButtonId, True)
-        
-        # GET SIMULATION SETTINGS
-        # Get StepSize option
+            
+        # READ SIMULATION SETTINGS
+        # Simulation step size
         options = self.controlPanel.stepSize_options
         for button, label, value in options:
             if( button.GetValue() ):
-                print( "stepSize: {}".format( label ) )
-                stepSize = value
-                self.controlPanel.speed.SetLabel( "{}x".format(value) )
-                self.controlPanel.slider.SetValue( value )
+                self.stepSize     = getattr(self, 'stepSize', value) # If the attribute does not exist yet, then a default value is returned, otherwise the current value.
+        # Simulation speed
+        options = self.controlPanel.speed_options
+        for button, label, value in options:
+            if( button.GetValue() ):
+                self.speed        = getattr(self, 'speed', value) # If the attribute does not exist yet, then a default value is returned, otherwise the current value.
         
-        # Starts the simulation with simulation settings
-        self.simulation = Simulation(self, stepSize) # Creates a new simulation instance
+        # READ ORBITAL SETTINGS
+        # Eccentricity            
+        options = self.controlPanel.eccentricity_options
+        for button, label, value in options:
+            if( button.GetValue() ):
+                self.eccentricity = getattr(self, 'eccentricity', value) # If the attribute does not exist yet, then a default value is returned, otherwise the current value.
+#            button.Disable() # BUG: If all radio buttons are disabled, then the value of the last option is always selected (since disabling triggers the event wx.EVT_RADIOBUTTON)
+        # Tilt
+        options = self.controlPanel.tilt_options
+        for button, label, value in options:
+            if( button.GetValue() ):
+                self.tilt         = getattr(self, 'tilt', value) # If the attribute does not exist yet, then a default value is returned, otherwise the current value.
+#            button.Disable() # BUG: If all radio buttons are disabled, then the value of the last option is always selected (since disabling triggers the event wx.EVT_RADIOBUTTON)
+        # Precession
+        options = self.controlPanel.precession_options
+        for button, label, value in options:
+            if( button.GetValue() ):
+                self.precession   = getattr(self, 'precession', value) # If the attribute does not exist yet, then a default value is returned, otherwise the current value.
+#            button.Disable() # BUG: If all radio buttons are disabled, then the value of the last option is always selected (since disabling triggers the event wx.EVT_RADIOBUTTON)
+                
+        # Starts the simulation with the selected settings
+        self.simulation = Simulation(self, self.stepSize, self.speed, self.eccentricity, self.tilt, self.precession) # Creates a new simulation instance
         self.simulation.runSimulation() # Starts the simulation
-        
 
 
     @fn_namer
@@ -99,6 +118,18 @@ class ControlWindow(wx.Frame):
         stopButtonId  = self.toolbar.stopButton.GetId()
         self.toolbar.EnableTool(startButtonId, True)
         self.toolbar.EnableTool(stopButtonId, False)
+        # Eccentricity
+        options = self.controlPanel.eccentricity_options
+        for button, label, value in options:
+            button.Enable()
+        # Tilt
+        options = self.controlPanel.tilt_options
+        for button, label, value in options:
+            button.Enable()
+        # Precession
+        options = self.controlPanel.precession_options
+        for button, label, value in options:
+            button.Enable()
         
         # Stops the simulation
         try:
@@ -122,68 +153,90 @@ class ControlWindow(wx.Frame):
 
 #------------------------------------------------------------------------------
 
-    # EVENTS AND FUNCTIONS
-#    @fn_namer
-#    def OnSelectStepsize(self, event):
-#        obj = event.GetEventObject()
-#        options = self.controlPanel.stepSize_options
-#        for label, value in options:
-#            if(label == obj.GetLabel()):
-#                print label
-#                self.simulation.ChangeSimulationStepsize( value )
+    # CHANGE OF SIMULATION SETTINGS
+    @fn_namer
+    def OnSelectStepsize(self, event):
+        options = self.controlPanel.stepSize_options
+        for button, label, value in options:
+            if( button.GetValue() ): # Get the option, where radio button is checked
+                print( "• stepSize: {} seconds".format( value ) )
+                self.stepSize = value
+                try:
+                    self.simulation.ChangeSimulationStepsize( value )
+                except AttributeError:
+                    pass
     
     
     @fn_namer
     def OnSelectSpeed(self, event): 
-        obj = event.GetEventObject()
         options = self.controlPanel.speed_options
-        for label, value in options:
-            if(label == obj.GetLabel()):
-                print label
-                self.simulation.ChangeSimulationSpeed( value )
+        for button, label, value in options:
+            if( button.GetValue() ): # Get the option, where radio button is checked
+                print( "• speed: {}".format( "{}x".format(value) ) )
+                self.speed = value
                 self.controlPanel.speed.SetLabel( "{}x".format(value) )
-                self.controlPanel.slider.SetValue( value )
-
-    @fn_namer
-    def OnSelectEccentricity(self, e): 
-        obj = e.GetEventObject()
-        options = self.controlPanel.eccentricity_options
-        for label, value in options:
-            if(label == obj.GetLabel()):
-                print label
-                self.simulation.ChangeOrbitalParameters( eccentricity=value )
-                self.controlPanel.eccentricity.SetLabel( "{:.5f}".format(value) )
-    
+                self.controlPanel.speedSlider.SetValue( value )
+                try:
+                    self.simulation.ChangeSimulationSpeed( value )
+                except AttributeError:
+                    pass
+                
     
     @fn_namer
-    def OnSelectTilt(self, e): 
-        obj = e.GetEventObject()
-        options = self.controlPanel.tilt_options
-        for label, value in options:
-            if(label == obj.GetLabel()):
-                print label
-                self.simulation.ChangeOrbitalParameters( tilt=value )
-                self.controlPanel.tilt.SetLabel( "{:.2f}".format(value) + unicode('°', 'utf-8') )
-   
-    
-    @fn_namer
-    def OnSelectPrecession(self, e): 
-        obj = e.GetEventObject()
-        options = self.controlPanel.precession_options
-        for label, value in options:
-            if(label == obj.GetLabel()):
-                print value
-                self.simulation.ChangeOrbitalParameters( precession=value )
-   
-    
-    @fn_namer
-    def OnSliderScroll(self, event): # called on slider events
+    def OnSpeedSlider(self, event): # called on slider events
         obj   = event.GetEventObject()
         value = obj.GetValue()
-        self.simulation.ChangeSimulationSpeed( value )
+        print( "• speed: {}".format( "{}x".format(value) ) )
+        self.speed = value
         self.controlPanel.speed.SetLabel( "{}x".format(value) )
-
+        try:
+            self.simulation.ChangeSimulationSpeed( value )
+        except AttributeError:
+            pass
     
+
+    @fn_namer
+    def OnSelectEccentricity(self, event):
+        options = self.controlPanel.eccentricity_options
+        for button, label, value in options:
+            if( button.GetValue() ): # Get the option, where radio button is checked
+                print( "• eccentricity: {:f}".format(value).rstrip('0') )
+                self.eccentricity = value
+                self.controlPanel.eccentricity.SetLabel( "{:f}".format(value).rstrip('0') )
+#                try:
+#                    self.simulation.ChangeOrbitalParameters( eccentricity=value )
+#                except AttributeError:
+#                    pass
+    
+    
+    @fn_namer
+    def OnSelectTilt(self, event):
+        options = self.controlPanel.tilt_options
+        for button, label, value in options:
+            if( button.GetValue() ): # Get the option, where radio button is checked
+                print( "• tilt: {:.2f}°".format(value) )
+                self.tilt = value
+                self.controlPanel.tilt.SetLabel( "{:.2f}".format(value) + unicode('°', 'utf-8') )
+#                try:
+#                    self.simulation.ChangeOrbitalParameters( tilt=value )
+#                except AttributeError:
+#                    pass
+   
+    
+    @fn_namer
+    def OnSelectPrecession(self, event):
+        options = self.controlPanel.precession_options
+        for button, label, value in options:
+            if( button.GetValue() ): # Get the option, where radio button is checked
+                print( "• tilt: {}".format(value) )
+                self.precession = value
+#                try:
+#                    self.simulation.ChangeOrbitalParameters( precession=value )
+#                except AttributeError:
+#                    pass
+    
+#------------------------------------------------------------------------------
+
     @fn_namer
     def OnAbout(self, event):
     	pass

@@ -11,7 +11,7 @@ from objects.moon       import Moon
 
 import math
 
-def init(  ):
+def init():
     """
         Create and initialize all celestial objects of the solar system.
 
@@ -143,8 +143,8 @@ def init(  ):
     model.solarSystem  = model.stars[:] + model.planets[:] + model.moons[:]
     
     # COMPARE OBJECTS   - creates compareable objects with all characteristics of the originals, only the eccentricity will be set to zero
-    comparisonList = [ earth ]
-    comparisonList = model.planets
+#    comparisonList = [ earth ]
+#    comparisonList = model.planets
     comparisons = [  ]
 #    for entry in comparisonList:
 #        newObject = Planet( entry.name, entry.mass, entry.radius, entry.tilt, entry.precession, entry.rotationPeriod, entry.barycenter, entry.a, entry.e, entry.theta0, entry.orbitalDirection )
@@ -153,9 +153,8 @@ def init(  ):
 #        newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
 #        comparisons.append(newObject)
     model.comparisons = comparisons
-#    model.solarSystem += model.comparisons
     
     # DISPLAY INFOS OF THE FOLLOWING OBJECTS
-    model.observations = [ earth ]
+    model.observation = earth
 
     return model

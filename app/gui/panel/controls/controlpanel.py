@@ -74,7 +74,7 @@ def CreateControlPanel(self):
     # Set position for each radio button and setup an event handler
     for radio in radioButtons:
         radio.SetPosition( (cols[1], row.next() ) )
-#        self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectStepsize, radio )
+        self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectStepsize, radio )
     options = [ (radio1, radio1.GetLabel(), 3600), (radio2, radio2.GetLabel(), 86400) ]
     controlPanel.stepSize_options = options
     controlPanel.stepSize_radioButtons = radioButtons
@@ -105,20 +105,20 @@ def CreateControlPanel(self):
     for radio in radioButtons:
         radio.SetPosition( (cols[1], row.next() ) )
         self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectSpeed, radio )
-    options = [ (radio1.GetLabel(), 1),
-                (radio2.GetLabel(), 5),
-                (radio3.GetLabel(), 10),
-                (radio4.GetLabel(), 25),
-                (radio5.GetLabel(), 50),
-                (radio6.GetLabel(), 100),
+    options = [ (radio1, radio1.GetLabel(), 1),
+                (radio2, radio2.GetLabel(), 5),
+                (radio3, radio3.GetLabel(), 10),
+                (radio4, radio4.GetLabel(), 25),
+                (radio5, radio5.GetLabel(), 50),
+                (radio6, radio6.GetLabel(), 100),
               ]
     controlPanel.speed_options = options
       
     # Slider to control the speed of the simulation
-    controlPanel.slider = wx.Slider( parent=controlPanel, id=wx.NewId(), value=1, minValue=1, maxValue=100, 
+    controlPanel.speedSlider = wx.Slider( parent=controlPanel, id=wx.NewId(), value=1, minValue=1, maxValue=100, 
               pos=(cols[16], rows[8]), size=(-1, 140), 
               style=(wx.SL_LEFT | wx.SL_INVERSE | wx.SL_MIN_MAX_LABELS ) )
-    self.Bind( wx.EVT_SCROLL, self.OnSliderScroll )
+    self.Bind( wx.EVT_SCROLL, self.OnSpeedSlider )
     
     # Display the current value
     controlPanel.speed = wx.StaticText( parent=controlPanel, id=wx.NewId(), label='1x', 
@@ -153,9 +153,9 @@ def CreateControlPanel(self):
     for radio in radioButtons:
         radio.SetPosition( (cols[1], row.next() ) )
         self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectEccentricity, radio )
-    options = [ (radio1.GetLabel(), 0.017),
-                (radio2.GetLabel(), 0.00006),
-                (radio3.GetLabel(), 0.0679),
+    options = [ (radio1, radio1.GetLabel(), 0.017),
+                (radio2, radio2.GetLabel(), 0.00006),
+                (radio3, radio3.GetLabel(), 0.0679),
               ]
     controlPanel.eccentricity_options = options
     
@@ -182,9 +182,9 @@ def CreateControlPanel(self):
     for radio in radioButtons:
         radio.SetPosition( (cols[1], row.next() ) )
         self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectTilt, radio )
-    options = [ (radio1.GetLabel(), 23.44),
-                (radio2.GetLabel(), 22.1),
-                (radio3.GetLabel(), 24.5),
+    options = [ (radio1, radio1.GetLabel(), 23.44),
+                (radio2, radio2.GetLabel(), 22.1),
+                (radio3, radio3.GetLabel(), 24.5),
               ]
     controlPanel.tilt_options = options
     
@@ -209,8 +209,8 @@ def CreateControlPanel(self):
     for radio in radioButtons:
         radio.SetPosition( (cols[1], row.next() ) )
         self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectPrecession, radio )
-    options = [ (radio1.GetLabel(),  1),
-                (radio2.GetLabel(), -1),
+    options = [ (radio1, radio1.GetLabel(),  1),
+                (radio2, radio2.GetLabel(), -1),
               ]
     controlPanel.precession_options = options
 
