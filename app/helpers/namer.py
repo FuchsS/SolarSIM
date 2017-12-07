@@ -18,6 +18,7 @@ from functools import wraps
 def fn_namer(function):
     @wraps(function)
     def function_namer(*args, **kwargs):
+        print( "--" )
         print( "called: {}".format(function.func_name) )
         result = function(*args, **kwargs)
         return result
