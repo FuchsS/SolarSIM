@@ -46,9 +46,12 @@ class Simulation:
         print( "• tilt: {:.2f}°".format( self.tilt ) )
         print( "• precession: {}".format( self.precession ) )
         
-        self.ChangeOrbitalParameters(old=self.system.observation, eccentricity=self.eccentricity, tilt=self.tilt, precession=self.precession )
+        self.setOrbitalParameters(old=self.system.observation, eccentricity=self.eccentricity, tilt=self.tilt, precession=self.precession )
         
         statusBar = self.panel.statusBar
+        
+#        self.panel.data1 = []
+#        self.panel.data2 = []
         
         t  = self.stepSize
         timeStep = 0
@@ -154,10 +157,14 @@ class Simulation:
             
             
             # PROGRESS IN TIME
+            self.panel.data1.append(self.panel.datagen.next())
+            self.panel.data2.append(-self.panel.data1[-1])
+#            self.panel.draw() # live drawing (really slow)
             t += dt
             timeStep += 1
         
         self.isStopped = True
+        self.panel.draw() # draw the charts at the end of the simulation
         # Cleaning up
         wx.CallAfter(self.cleanupSimulation)
 
@@ -174,7 +181,7 @@ class Simulation:
         
     
     @fn_namer
-    def ChangeOrbitalParameters(self, old, tilt=False, precession=False, eccentricity=False):
+    def setOrbitalParameters(self, old, tilt=False, precession=False, eccentricity=False):
 
 # TO DO: Create a function DeepCopy
         # Create a new object
