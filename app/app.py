@@ -15,12 +15,19 @@
 """ Description:
     
     Contains the main program.
-        Call sequence: App -> ControlWindow -> "Start" -> Simulation -> Model & Animation
+        Call sequence: App -> Window -> Menu
+                                     -> Toolbar
+                                     -> StatusBar
+                                     -> MainPanel -> Chart1
+                                                  -> Chart2
+                                     -OnStart -> Simulation -> Model
+                                                            -> Animation
+                                     
     
 """
 
 import wx                                   # for widgets
-from   gui.panel.frame import ControlWindow # for the control window
+from   gui.panel.frame import Window # for the control window
 
 
 class App(wx.App):
@@ -46,7 +53,7 @@ class App(wx.App):
         """
         Initialise the app with a control window.
         """
-        self.frame = ControlWindow(None, id=wx.ID_ANY, title='SolarSIM')
+        self.frame = Window(None, id=wx.ID_ANY, title='SolarSIM', width=1024, height=768)
         self.frame.Show(True) # display the window
         return True
 
