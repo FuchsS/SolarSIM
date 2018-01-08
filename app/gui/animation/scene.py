@@ -19,6 +19,7 @@
 """
 
 import visual as vs # for 3D panel
+import Image
 
 class Scene:
     """ 
@@ -66,6 +67,22 @@ class Scene:
             center  = center,
             range   = 5,
         )
+        
+        # ADD A BACKGROUND (Optional)
+        """
+            Add a background image as a sphere at the origin (0, 0, 0)
+        """
+        backgroundImage     = Image.open( './textures/milky way.jpg' )
+        background          = vs.sphere( radius = 300 )
+        background.material = vs.materials.texture( data    = backgroundImage,
+                                                    mapping = "spherical"
+                                                  )
+        background.opacity  = 0.9
+        
+        # ADD ORBITAL RING
+        vs.ring( axis=(0,1,0), radius=10, thickness=0.05, color=(1,1,1) )
+            
+
 
         # Set some program flags
         self.isPaused = False
@@ -73,7 +90,6 @@ class Scene:
         # Event handler
         self.scene.bind('click',   self.OnClick) # click event
         self.scene.bind('keydown', self.OnKeyPress) # key pressed event
-
     
     # EVENTS
     def OnClick(self, e):

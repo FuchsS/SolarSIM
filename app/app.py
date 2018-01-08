@@ -29,7 +29,6 @@
 import wx                                   # for widgets
 from   gui.panel.frame import Window # for the control window
 
-
 class App(wx.App):
     """
     Initialise the App.
@@ -45,8 +44,8 @@ class App(wx.App):
 
     """
     def __init__(self, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
-        
         wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
+        
         
     
     def OnInit(self):

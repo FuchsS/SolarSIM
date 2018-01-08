@@ -3,13 +3,13 @@
 from helpers.exp_object import eObject # a custom object that can be expanded with the dot notation to add properties
 
 import visual as vs
-import Image
 
 from objects.star       import Star
 from objects.planet     import Planet
 from objects.moon       import Moon
 
 import math
+from globals import *
 
 def init():
     """
@@ -19,16 +19,7 @@ def init():
 
 
     
-    # ADD A BACKGROUND (Optional)
-    """
-        Add a background image as a sphere at the origin (0, 0, 0)
-    """
-    backgroundImage     = Image.open( './textures/milky way.jpg' )
-    background          = vs.sphere( radius = 300 )
-    background.material = vs.materials.texture( data    = backgroundImage,
-                                                mapping = "spherical"
-                                              )
-    background.opacity  = 0.9
+
 
 
     
@@ -72,8 +63,9 @@ def init():
         precession        = 1,
         rotationPeriod    = 0.99726968,
         barycenter        = sun,
-        a                 = 1.49598023 * 10**11,
-        e                 = 0.017 # today: 0.0167086; min: 0.000055; max: 0.0679
+        a                 = AU,
+        e                 = 0.017, # today: 0.0167086; min: 0.000055; max: 0.0679
+        theta0            = 0
     )
 #    mars       = Planet( "Mars"      , 6.41710 * 10**23, 3.3895 * 10**6,   1.025957,     sun, 2.279392   * 10**11, 0.0934000 )
 #    jupiter    = Planet( "Jupiter"   , 1.89860 * 10**27, 6.9911 * 10**7, 0.41354167,     sun, 7.78299    * 10**11, 0.0484980 )
@@ -82,7 +74,6 @@ def init():
 #    neptune    = Planet( "Neptune"   , 1.02430 * 10**26, 2.4622 * 10**7,     0.6713,     sun, 4.50445    * 10**12, 0.0094560 )
 #    pluto      = Planet( "Pluto"     , 1.303   * 10**22, 1.187  * 10**6,   6.387230,     sun, 5.90638    * 10**12, 0.2488    )
 #    moon       =   Moon( "Moon"      , 7.34200 * 10**22, 1.7371 * 10**6,  27.321661,   earth, 3.84399    * 10**8 , 0.0549000 )
-
 
     
     # CREATE 3D MODELS
@@ -119,9 +110,14 @@ def init():
 #    moon.model.velocityVector = vs.vector( 0.9,   0,   0)
     
     # realisitic distance ratio
-    sun.createModel    ( (0, 0, 0), 1, color=vs.color.white, texture='./textures/sun.jpg', makeTrail=False)
+    # Unfortunately, no texture or material can be used for the sun except for "emissive". 
+    # The sun shines from the inside out, illuminating all celestial bodies around it, 
+    # but not the sun's surface itself. Only the material "emissive" emulates this effect.
+#    sun.createModel    ( (0, 0, 0), 1, color=vs.color.white, texture='./textures/sun.jpg', makeTrail=False)
+    sun.createModel    ( (0, 0, 0), 1, color=vs.color.orange, material=vs.materials.emissive, makeTrail=False)
 #    mercury.createModel( (3.87, 0, 0),  0.3, texture='./textures/mercury.jpg')
 #    venus.createModel  ( (7.23, 0, 0),  0.4, texture='./textures/venus.jpg'  )
+#    earth.createModel  ( (10, 0, 0),  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
     earth.createModel  ( (10, 0, 0),  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
 #    mars.createModel   ( (15.24, 0, 0), 0.45, texture='./textures/mars.jpg'   )
 #    jupiter.createModel( (52.03, 0, 0),  0.8, texture='./textures/jupiter.jpg', rings='./textures/jupiters rings.png')
