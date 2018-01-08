@@ -9,13 +9,7 @@ import model as model
 import visual as vs
 from objects.planet     import Planet
 from helpers.namer import fn_namer
-
-# constants
-DAY  = 86400                           # mean solar day [s]
-YEAR = 365.25                          # a solar year is a circulation of the earth on its orbit around the sun or the time required for it [days]
-S    = 1367                            # so called solar constant at a distance of 1 AU [W/m²]
-AU   = 1.49598023 * 10**11             # astronomical unit: length of the semi-major axis [m]
-
+from globals import *
 
 class Simulation:
 
@@ -23,7 +17,7 @@ class Simulation:
         self.panel      = panel
         
         # Creates the animation
-        self.animation = Scene(title="SolarSIM", x=400, y=0, width=800, height=800, center=(10, 0, 0) ).scene
+        self.animation = Scene(title="SolarSIM", x=400, y=0, width=800, height=800, center=(0, 0, 0) ).scene
         self.system = model.init()
 
         # Set settings
@@ -215,6 +209,11 @@ class Simulation:
             if old in aList:
                 aList.remove(old)
                 aList.append(new)
+        
+        # If the old object is beeing observed, the new one should be as well
+        if old == self.system.observation:
+            del self.system.observation
+            self.system.observation = new
         
         # Delete the old object itself
         old.model.visible = False

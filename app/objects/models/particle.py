@@ -47,6 +47,7 @@ class Particle( vs.sphere ):
         
         # DETERMINE POSITION AND ORBITAL SETTINGS
         self.a = self.x
+#        self.a = self.z
         self.b = self.a - (body.e * self.a)
         direction = body.orbitalDirection
         if   math.cos(body.theta0) == 0:
@@ -56,8 +57,10 @@ class Particle( vs.sphere ):
         else:
             self.b *= -1 # because z.axis is in the "wrong" direction (in vpython)
             self.orbitalDirection = vs.vector( -direction, 1, 1)
-        self.x = self.a * ( math.cos(body.alpha) + body.e) # x-coordinate from the barycenter (x + e    with e = a · ε)
-        self.z = self.b * math.sin(body.alpha) # z is actually y (in vpython)
+        self.x = self.a * ( math.cos(body.theta0) + body.e) # x-coordinate from the barycenter (x + e    with e = a · ε)
+        self.z = self.b * math.sin(body.theta0) # z is actually y (in vpython)
+#        self.z = self.a * ( math.cos(body.theta0) + body.e) # x-coordinate from the barycenter (x + e    with e = a · ε)
+#        self.x = self.b * math.sin(body.theta0)
 
         # ADD TEXTURE IMAGE
         if texture:
