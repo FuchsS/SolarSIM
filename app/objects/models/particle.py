@@ -27,13 +27,15 @@ class Particle( vs.sphere ):
         """
         tilt = math.radians(body.tilt)
         precession = body.precession
-        vs.sphere.__init__( self, pos=vs.vector(pos), radius=radius, axis=vs.vector( math.cos(tilt), precession * math.sin(tilt), 0), color=color, make_trail=False )
+        if type(pos) is int: # only for setOrbitalParameters (in Simulation)
+            pos=vs.vector( (pos, 0, 0) )
+        vs.sphere.__init__( self, pos=pos, radius=radius, axis=vs.vector( math.cos(tilt), precession * math.sin(tilt), 0), color=color, make_trail=False )
         self.body       = body
         self.makeTrail  = makeTrail
-        self.initialPos = vs.vector(pos)
+        self.initialPos = pos
         
         # ADD A ROTATIONAL AXIS
-        self.axisFrame = vs.frame(pos=pos)        
+        self.axisFrame = vs.frame( pos=pos )        
         self.rotationalAxis = vs.arrow( 
                 frame       = self.axisFrame, 
                 pos         = vs.vector(  precession * math.sin(tilt), -math.cos(tilt), 0),
@@ -46,6 +48,7 @@ class Particle( vs.sphere ):
         )
         
         # DETERMINE POSITION AND ORBITAL SETTINGS
+        a = self.body.a
         self.a = self.x
 #        self.a = self.z
         self.b = self.a - (body.e * self.a)

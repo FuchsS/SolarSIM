@@ -15,6 +15,6 @@ class Star(Agglomerate):
 
         # add local light source (set at pos of the star)
 # the color must be replaced through a function, which determines the color of the star out of its effective temperatur (black body)
-        vs.local_light( pos   = pos,      
+        vs.local_light( pos   = self.pos,      
                         color = color
                       )

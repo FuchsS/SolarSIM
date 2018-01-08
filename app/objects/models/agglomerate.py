@@ -17,7 +17,7 @@ class Agglomerate(Particle):
         self.rings = rings
         
         if rings:
-            self.rings = vs.ellipsoid( pos=pos, size=( self.radius * 4, 0.01, self.radius * 4 ), opacity=0.95 )
+            self.rings = vs.ellipsoid( pos=self.pos, size=( self.radius * 4, 0.01, self.radius * 4 ), opacity=0.95 )
             width    = 512 # must be power of 2
             height   = 512 # must be power of 2
             image    = Image.open(rings)

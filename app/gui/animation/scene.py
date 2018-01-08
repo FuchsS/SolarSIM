@@ -80,7 +80,7 @@ class Scene:
         background.opacity  = 0.9
         
         # ADD ORBITAL RING
-        vs.ring( axis=(0,1,0), radius=10, thickness=0.05, color=(1,1,1) )
+        vs.ring( axis=(0,1,0), radius=10, thickness=0.02, color=(1,1,1) )
             
 
 
