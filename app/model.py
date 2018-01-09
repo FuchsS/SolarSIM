@@ -110,14 +110,9 @@ def init():
 #    moon.model.velocityVector = vs.vector( 0.9,   0,   0)
     
     # realisitic distance ratio
-    # Unfortunately, no texture or material can be used for the sun except for "emissive". 
-    # The sun shines from the inside out, illuminating all celestial bodies around it, 
-    # but not the sun's surface itself. Only the material "emissive" emulates this effect.
-#    sun.createModel    ( (0, 0, 0), 1, color=vs.color.white, texture='./textures/sun.jpg', makeTrail=False)
-    sun.createModel    ( 0, 1, color=vs.color.orange, material=vs.materials.emissive, makeTrail=False)
+    sun.createModel    ( 0, 1, color=vs.color.white, texture='./textures/sun.jpg', makeTrail=False)
 #    mercury.createModel( (3.87, 0, 0),  0.3, texture='./textures/mercury.jpg')
 #    venus.createModel  ( (7.23, 0, 0),  0.4, texture='./textures/venus.jpg'  )
-#    earth.createModel  ( (10, 0, 0),  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
     earth.createModel  ( 10,  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
 #    mars.createModel   ( (15.24, 0, 0), 0.45, texture='./textures/mars.jpg'   )
 #    jupiter.createModel( (52.03, 0, 0),  0.8, texture='./textures/jupiter.jpg', rings='./textures/jupiters rings.png')

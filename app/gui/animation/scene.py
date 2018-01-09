@@ -80,7 +80,7 @@ class Scene:
         background.opacity  = 0.9
         
         # ADD ORBITAL RING
-        vs.ring( axis=(0,1,0), radius=10, thickness=0.02, color=(1,1,1) )
+#        vs.ring( axis=(0,1,0), radius=10, thickness=0.02, color=vs.color.red )
             
 
 
@@ -88,11 +88,11 @@ class Scene:
         self.isPaused = False
         
         # Event handler
-        self.scene.bind('click',   self.OnClick) # click event
-        self.scene.bind('keydown', self.OnKeyPress) # key pressed event
+        self.scene.bind( 'mousedown', self.OnMousedown) # mouse pressed event
+        self.scene.bind( 'keydown', self.OnKeyPress) # key pressed event
     
-    # EVENTS
-    def OnClick(self, e):
+    # EVENTS        
+    def OnMousedown(self, event):
         scene = self.scene
         scene.center = scene.mouse.pos # focus camera on new position
         
