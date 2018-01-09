@@ -65,7 +65,7 @@ def init():
         barycenter        = sun,
         a                 = AU,
         e                 = 0.017, # today: 0.0167086; min: 0.000055; max: 0.0679
-        theta0            = 0
+        theta0            = 270
     )
 #    mars       = Planet( "Mars"      , 6.41710 * 10**23, 3.3895 * 10**6,   1.025957,     sun, 2.279392   * 10**11, 0.0934000 )
 #    jupiter    = Planet( "Jupiter"   , 1.89860 * 10**27, 6.9911 * 10**7, 0.41354167,     sun, 7.78299    * 10**11, 0.0484980 )
@@ -114,11 +114,11 @@ def init():
     # The sun shines from the inside out, illuminating all celestial bodies around it, 
     # but not the sun's surface itself. Only the material "emissive" emulates this effect.
 #    sun.createModel    ( (0, 0, 0), 1, color=vs.color.white, texture='./textures/sun.jpg', makeTrail=False)
-    sun.createModel    ( (0, 0, 0), 1, color=vs.color.orange, material=vs.materials.emissive, makeTrail=False)
+    sun.createModel    ( 0, 1, color=vs.color.orange, material=vs.materials.emissive, makeTrail=False)
 #    mercury.createModel( (3.87, 0, 0),  0.3, texture='./textures/mercury.jpg')
 #    venus.createModel  ( (7.23, 0, 0),  0.4, texture='./textures/venus.jpg'  )
 #    earth.createModel  ( (10, 0, 0),  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
-    earth.createModel  ( (10, 0, 0),  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
+    earth.createModel  ( 10,  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
 #    mars.createModel   ( (15.24, 0, 0), 0.45, texture='./textures/mars.jpg'   )
 #    jupiter.createModel( (52.03, 0, 0),  0.8, texture='./textures/jupiter.jpg', rings='./textures/jupiters rings.png')
 #    saturn.createModel ( (95.52, 0, 0),  0.7, texture='./textures/saturn.jpg' , rings='./textures/saturns rings.png' )
@@ -139,15 +139,15 @@ def init():
     model.solarSystem  = model.stars[:] + model.planets[:] + model.moons[:]
     
     # COMPARE OBJECTS   - creates compareable objects with all characteristics of the originals, only the eccentricity will be set to zero
-#    comparisonList = [ earth ]
+    comparisonList = [ earth ]
 #    comparisonList = model.planets
     comparisons = [  ]
-#    for entry in comparisonList:
-#        newObject = Planet( entry.name, entry.mass, entry.radius, entry.tilt, entry.precession, entry.rotationPeriod, entry.barycenter, entry.a, entry.e, entry.theta0, entry.orbitalDirection )
-#        newObject.createModel( entry.model.initialPos, entry.model.radius,  material=vs.materials.BlueMarble, ) #color=vs.color.red )
-#        newObject.model.visible = False # hide the object, so that only its trail is visible
-#        newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
-#        comparisons.append(newObject)
+    for entry in comparisonList:
+        newObject = Planet( entry.name, entry.mass, entry.radius, entry.tilt, entry.precession, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
+        newObject.createModel( entry.model.initialPos, entry.model.radius, color=vs.color.red )
+        newObject.model.visible = False # hide the object, so that only its trail is visible
+        newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
+        comparisons.append(newObject)
     model.comparisons = comparisons
     
     # DISPLAY INFOS OF THE FOLLOWING OBJECTS

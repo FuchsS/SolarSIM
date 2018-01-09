@@ -96,6 +96,11 @@ class Simulation:
                 
                 # ORBIT AROUND THE BARYCENTER
                 planet.orbit( t, dt )
+                if planet.model.rings:
+                    planet.model.rings.pos = planet.model.pos
+                    planet.model.rings.rotate( angle  = planet.get_deltaRotationalAngularPosition( t, dt ),     # angle in radians [rad]
+                                             axis = planet.model.rotationalAxis.axis # x, y, z
+                                           )
                 
                 # DEBUG
                 planet.distance += dt * planet.orbitalVelocity
@@ -201,8 +206,9 @@ class Simulation:
         new.createModel(
             old.model.pos,
             old.model.radius, 
-            material=old.model.material
+            material=old.model.material,
         )
+# TO DO: COPY RINGS
 			
         # Delete all list entries of the old object and create entries for the new object
         for aList in [self.system.stars, self.system.planets, self.system.moons, self.system.solarSystem, self.system.comparisons]:

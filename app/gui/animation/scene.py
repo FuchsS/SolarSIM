@@ -65,7 +65,7 @@ class Scene:
 #            ambient = vs.color.gray(0.6), # compromise
 #            ambient = vs.color.white, # color of the ambient light (= bright light, hardly any shadows)
             center  = center,
-            range   = 5,
+            range   = 12,
         )
         
         # ADD A BACKGROUND (Optional)
@@ -80,7 +80,7 @@ class Scene:
         background.opacity  = 0.9
         
         # ADD ORBITAL RING
-        vs.ring( axis=(0,1,0), radius=10, thickness=0.05, color=(1,1,1) )
+        vs.ring( axis=(0,1,0), radius=10, thickness=0.02, color=(1,1,1) )
             
 
 
