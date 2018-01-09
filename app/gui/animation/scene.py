@@ -65,7 +65,7 @@ class Scene:
 #            ambient = vs.color.gray(0.6), # compromise
 #            ambient = vs.color.white, # color of the ambient light (= bright light, hardly any shadows)
             center  = center,
-            range   = 5,
+            range   = 12,
         )
         
         # ADD A BACKGROUND (Optional)
