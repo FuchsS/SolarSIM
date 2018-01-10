@@ -65,6 +65,7 @@ class Scene:
 #            ambient = vs.color.gray(0.6), # compromise
 #            ambient = vs.color.white, # color of the ambient light (= bright light, hardly any shadows)
             center  = center,
+#            forward = (-1,0,0),
             range   = 12,
         )
         
@@ -81,6 +82,7 @@ class Scene:
         
         # ADD ORBITAL RING
 #        vs.ring( axis=(0,1,0), radius=10, thickness=0.02, color=vs.color.red )
+        self.showAxes( None, vs.color.white, 3, (0,0,0))# (-11, 6, 0))
             
 
 
@@ -90,6 +92,17 @@ class Scene:
         # Event handler
         self.scene.bind( 'mousedown', self.OnMouseDown) # mouse pressed event
         self.scene.bind( 'keydown', self.OnKeyPress) # key pressed event
+        
+    
+    # Make axes visible (of world or frame).
+    def showAxes( self, frame, color, length, pos ): # Use frame=None for world.
+        directions = [ vs.vector(length, 0, 0), vs.vector(0, length, 0), vs.vector(0, 0, length) ]
+        texts = ["x","y","z"]
+        pos = vs.vector(pos)
+        for i in range(3): # each direction
+           vs.curve( frame=frame, color=color, pos=[pos, pos+directions[i]])
+           vs.label( frame=frame, color=color, pos=pos+directions[i], text=texts[i], opacity=0, box=False )
+
     
     # EVENTS        
     def OnMouseDown(self, event):

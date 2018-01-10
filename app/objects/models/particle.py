@@ -25,6 +25,7 @@ class Particle( vs.sphere ):
             showTrail        = optional: if True a curve will be drawn as trail, default is True
               
         """
+        alpha = body.alpha
         tilt = math.radians(body.tilt)
         precession = body.precession
         if type(pos) is int: # only for setOrbitalParameters (in Simulation)
@@ -33,13 +34,17 @@ class Particle( vs.sphere ):
         self.body       = body
         self.makeTrail  = makeTrail
         self.initialPos = pos
+        self.a = self.x
         
         # ADD A ROTATIONAL AXIS
-        self.axisFrame = vs.frame( pos=pos )        
+        self.axisFrame = vs.frame( pos=pos )
+        x = precession * math.sin(tilt)
+        y = math.cos(tilt)
+        z = 0
         self.rotationalAxis = vs.arrow( 
                 frame       = self.axisFrame, 
-                pos         = vs.vector(  precession * math.sin(tilt), -math.cos(tilt), 0),
-                axis        = vs.vector( -precession * math.sin(tilt),  math.cos(tilt), 0), 
+                pos         = vs.vector(  x, -y * 2 * radius, z),
+                axis        = vs.vector( -x,  y, z),
                 length      = 4. * radius, 
                 shaftwidth  = 0.01,
                 headwidth   = 0.01,
@@ -48,22 +53,14 @@ class Particle( vs.sphere ):
         )
         
         # DETERMINE POSITION AND ORBITAL SETTINGS
-        self.a = self.x
-#        self.a = self.z
-        self.b = self.a - (body.e * self.a)
-        direction = body.orbitalDirection
-        if   math.cos(body.theta0) == 0:
-            self.orbitalDirection = vs.vector( direction, 1, 1)
-        elif math.sin(body.theta0) == 0:
-            self.orbitalDirection = vs.vector( 1, 1, direction)
-        else:
-            self.b *= -1 # because z.axis is in the "wrong" direction (in vpython)
-            self.orbitalDirection = vs.vector( -direction, 1, 1)
-        self.x = self.a * ( math.cos(body.theta0) + body.e) # x-coordinate from the barycenter (x + e    with e = a · ε)
-        self.z = self.b * math.sin(body.theta0) # z is actually y (in vpython)
-#        self.z = self.a * ( math.cos(body.theta0) + body.e) # x-coordinate from the barycenter (x + e    with e = a · ε)
-#        self.x = self.b * math.sin(body.theta0)
-
+        e = body.e
+        a = self.a
+        r = a + ( -math.sin(alpha) * a * e )
+        x = -math.sin(alpha) * r
+        z = -math.cos(alpha) * r
+        self.pos           = (x, 0, z) # move planet
+        self.axisFrame.pos = (x, 0, z) # move rotational axis
+        
         # ADD TEXTURE IMAGE
         if texture:
             width    = 1024 # must be power of 2
@@ -80,6 +77,7 @@ class Particle( vs.sphere ):
 
         # DISPLAY NAME
         print(body.name)
+        print("--")
 
 
 
