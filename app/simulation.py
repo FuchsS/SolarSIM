@@ -18,7 +18,7 @@ class Simulation:
         
         # Creates the animation
         self.animation = Scene(title="SolarSIM", x=400, y=0, width=800, height=800, center=(0, 0, 0) ).scene
-        self.system = model.init()
+        self.system = model.init(eccentricity, tilt, precession)
 
         # Set settings
         self.stepSize     = stepSize
@@ -39,8 +39,6 @@ class Simulation:
         print( "• eccentricity: {:f}".format( self.eccentricity ).rstrip('0') )
         print( "• tilt: {:.2f}°".format( self.tilt ) )
         print( "• precession: {}".format( self.precession ) )
-        
-        self.setOrbitalParameters(old=self.system.observation, eccentricity=self.eccentricity, tilt=self.tilt, precession=self.precession )
         
         statusBar = self.panel.statusBar
         
@@ -114,11 +112,14 @@ class Simulation:
                     print( "· in the Simulation: %.6f" % ( t/DAY ) )
                     print( "· traveled distance: %.2f km" % (planet.distance/1000) )
                     print( "· mean velocity: %.2f km/s" % (planet.meanVelocity/( t/dt )/1000) )
+                    
+                # CALCULATE INSOLATION
+                print(planet.alpha)
+                oneYearPassed = planet.alpha > (planet.theta0 + 2*math.pi)
+                print( oneYearPassed )
+#                self.panel.data1.append(self.panel.datagen.next())
+#                self.panel.data2.append(-self.panel.data1[-1])
                                     
-
-            for planet in system.comparisons:
-                # ORBIT AROUND THE BARYCENTER
-                planet.orbit( t, dt )
 
             # MOONS
             for moon in system.moons:
@@ -143,6 +144,8 @@ class Simulation:
                                            )
                     
             for body in system.comparisons:
+                # ORBIT AROUND THE BARYCENTER
+                body.orbit( t, dt )
                 # Simulate rotation around the objects own axis
                 body.model.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),               # angle in radians [rad]
                                    axis   = body.model.rotationalAxis.axis # x, y, z
@@ -156,8 +159,8 @@ class Simulation:
             
             
             # PROGRESS IN TIME
-            self.panel.data1.append(self.panel.datagen.next())
-            self.panel.data2.append(-self.panel.data1[-1])
+#            self.panel.data1.append(self.panel.datagen.next())
+#            self.panel.data2.append(-self.panel.data1[-1])
 #            self.panel.draw() # live drawing (really slow)
             t += dt
             timeStep += 1
@@ -177,54 +180,6 @@ class Simulation:
     def cleanupSimulation(self):
         # Deletes the animation
         self.animation.delete()
-        
-    
-    @fn_namer
-    def setOrbitalParameters(self, old, tilt=False, precession=False, eccentricity=False):
-
-# TO DO: Create a function DeepCopy
-        # Create a new object
-        if not tilt:
-            tilt         = old.tilt
-        if not precession:
-            precession   = old.precession
-        if not eccentricity:
-            eccentricity = old.e
-        new = Planet(
-            old.name,
-            old.mass,
-            old.radius,
-            tilt, # new value
-            precession, # new value
-            old.rotationPeriod,
-            old.barycenter,
-            old.a,
-            eccentricity, # new value
-            old.theta0,
-            old.orbitalDirection
-        )
-        new.createModel(
-            old.model.pos,
-            old.model.radius, 
-            material=old.model.material,
-        )
-# TO DO: COPY RINGS
-			
-        # Delete all list entries of the old object and create entries for the new object
-        for aList in [self.system.stars, self.system.planets, self.system.moons, self.system.solarSystem, self.system.comparisons]:
-            if old in aList:
-                aList.remove(old)
-                aList.append(new)
-        
-        # If the old object is beeing observed, the new one should be as well
-        if old == self.system.observation:
-            del self.system.observation
-            self.system.observation = new
-        
-        # Delete the old object itself
-        old.model.visible = False
-        old.model.axisFrame.visible = False
-        del old
         
     
     @fn_namer

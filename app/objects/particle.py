@@ -71,7 +71,11 @@ class Particle(object):
     
     @property
     def orbitalDistance( self ):
-        r = self.a * ( 1 + self.e * math.cos(self.alpha) )
+#        r = self.a * ( 1 + self.e * math.cos(self.alpha) )
+        alpha = self.alpha
+        e = self.e
+        a = self.a
+        r = a + ( -math.sin(alpha) * a * e )
         return r
     
     
@@ -108,16 +112,15 @@ class Particle(object):
     
     def orbit( self, t, dt ):
         self.alpha += self.get_deltaOrbitalAngularPosition( t, dt )
-#        if ( self.alpha > 2 * math.pi ):
-#            self.alpha -= 2 * math.pi
-        x  = self.model.a * ( math.cos(self.alpha) + self.e ) # x-coordinate from the barycenter (x + e    with e = a · ε)
-        z  = self.model.b * math.sin(self.alpha)
-        x *= self.model.orbitalDirection.x
-        z *= self.model.orbitalDirection.z
+        alpha = self.alpha
+        
+        e = self.e
+        a = self.model.a
+        r = a + ( -math.sin(alpha) * a * e )
+        x = -math.sin(alpha) * r
+        z = -math.cos(alpha) * r
         self.model.pos           = (x, 0, z) # move planet
         self.model.axisFrame.pos = (x, 0, z) # move rotational axis
-        
-
 
 
     @property

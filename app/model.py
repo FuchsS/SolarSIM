@@ -11,7 +11,7 @@ from objects.moon       import Moon
 import math
 from globals import *
 
-def init():
+def init(eccentricity, tilt, precession):
     """
         Create and initialize all celestial objects of the solar system.
 
@@ -59,13 +59,13 @@ def init():
         name              = "Earth",
         mass              = 5.97237 * 10**24,
         radius            = 6.371  * 10**6,
-        tilt              = 23.44, # today: 23.44; min: 22.1; max: 24.5
-        precession        = 1,
+        tilt              = tilt, #23.44, # today: 23.44; min: 22.1; max: 24.5
+        precession        = precession, #1,
         rotationPeriod    = 0.99726968,
         barycenter        = sun,
         a                 = AU,
-        e                 = 0.017, # today: 0.0167086; min: 0.000055; max: 0.0679
-        theta0            = 270
+        e                 = eccentricity, #0.017, # today: 0.0167086; min: 0.000055; max: 0.0679
+        theta0            = 3/2. * math.pi,   # autumn equinox: 0. * math.pi; winter solstice: 1/2. * math.pi; vernal equinox: 2/2. * math.pi; summer solstice: 3/2. * math.pi
     )
 #    mars       = Planet( "Mars"      , 6.41710 * 10**23, 3.3895 * 10**6,   1.025957,     sun, 2.279392   * 10**11, 0.0934000 )
 #    jupiter    = Planet( "Jupiter"   , 1.89860 * 10**27, 6.9911 * 10**7, 0.41354167,     sun, 7.78299    * 10**11, 0.0484980 )
@@ -138,7 +138,8 @@ def init():
 #    comparisonList = model.planets
     comparisons = [  ]
     for entry in comparisonList:
-        newObject = Planet( entry.name, entry.mass, entry.radius, entry.tilt, entry.precession, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
+#        newObject = Planet( entry.name, entry.mass, entry.radius, 23.44, 1, entry.rotationPeriod, entry.barycenter, entry.a, 0.017, entry.theta0, entry.orbitalDirection )
+        newObject = Planet( entry.name, entry.mass, entry.radius, 23.44, 1, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
         newObject.createModel( entry.model.initialPos, entry.model.radius, color=vs.color.red )
         newObject.model.visible = False # hide the object, so that only its trail is visible
         newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
