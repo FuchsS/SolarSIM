@@ -140,8 +140,8 @@ def init():
     for entry in comparisonList:
         newObject = Planet( entry.name, entry.mass, entry.radius, entry.tilt, entry.precession, entry.rotationPeriod, entry.barycenter, entry.a, 0, entry.theta0, entry.orbitalDirection )
         newObject.createModel( entry.model.initialPos, entry.model.radius, color=vs.color.red )
-        newObject.model.visible = False # hide the object, so that only its trail is visible
-        newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
+#        newObject.model.visible = False # hide the object, so that only its trail is visible
+#        newObject.model.axisFrame.visible = False # hide the object, so that only its trail is visible
         comparisons.append(newObject)
     model.comparisons = comparisons
     

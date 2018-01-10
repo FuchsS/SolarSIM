@@ -116,10 +116,6 @@ class Simulation:
                     print( "· mean velocity: %.2f km/s" % (planet.meanVelocity/( t/dt )/1000) )
                                     
 
-            for planet in system.comparisons:
-                # ORBIT AROUND THE BARYCENTER
-                planet.orbit( t, dt )
-
             # MOONS
             for moon in system.moons:
 #                moon.orbit( t, dt )
@@ -143,6 +139,8 @@ class Simulation:
                                            )
                     
             for body in system.comparisons:
+                # ORBIT AROUND THE BARYCENTER
+                body.orbit( t, dt )
                 # Simulate rotation around the objects own axis
                 body.model.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),               # angle in radians [rad]
                                    axis   = body.model.rotationalAxis.axis # x, y, z
