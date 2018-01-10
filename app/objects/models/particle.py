@@ -48,7 +48,6 @@ class Particle( vs.sphere ):
         )
         
         # DETERMINE POSITION AND ORBITAL SETTINGS
-        a = self.body.a
         self.a = self.x
 #        self.a = self.z
         self.b = self.a - (body.e * self.a)

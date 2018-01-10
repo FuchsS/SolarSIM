@@ -110,7 +110,7 @@ def init():
 #    moon.model.velocityVector = vs.vector( 0.9,   0,   0)
     
     # realisitic distance ratio
-    sun.createModel    ( 0, 1, color=vs.color.white, texture='./textures/sun.jpg', makeTrail=False)
+    sun.createModel    ( 0, 1, color=vs.color.gray(0.3), texture='./textures/sun.jpg', makeTrail=False)
 #    mercury.createModel( (3.87, 0, 0),  0.3, texture='./textures/mercury.jpg')
 #    venus.createModel  ( (7.23, 0, 0),  0.4, texture='./textures/venus.jpg'  )
     earth.createModel  ( 10,  0.5, texture='./textures/earth.jpg') # Attention: material='Blue Marble' causes a bug, when stopping and starting the simulation again
