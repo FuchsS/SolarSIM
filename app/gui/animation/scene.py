@@ -88,11 +88,11 @@ class Scene:
         self.isPaused = False
         
         # Event handler
-        self.scene.bind( 'mousedown', self.OnMousedown) # mouse pressed event
+        self.scene.bind( 'mousedown', self.OnMouseDown) # mouse pressed event
         self.scene.bind( 'keydown', self.OnKeyPress) # key pressed event
     
     # EVENTS        
-    def OnMousedown(self, event):
+    def OnMouseDown(self, event):
         scene = self.scene
         scene.center = scene.mouse.pos # focus camera on new position
         
