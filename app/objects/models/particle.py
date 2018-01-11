@@ -25,10 +25,10 @@ class Particle( vs.sphere ):
             showTrail        = optional: if True a curve will be drawn as trail, default is True
               
         """
-        alpha = body.alpha
-        tilt = math.radians(body.tilt)
+        alpha      = body.alpha
+        tilt       = body.tilt
         precession = body.precession
-        if type(pos) is int: # only for setOrbitalParameters (in Simulation)
+        if type(pos) is int: # only for copy of planet (in Simulation)
             pos=vs.vector( (pos, 0, 0) )
         vs.sphere.__init__( self, pos=pos, radius=radius, axis=vs.vector( math.cos(tilt), precession * math.sin(tilt), 0), color=color, make_trail=False )
         self.body       = body

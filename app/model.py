@@ -9,7 +9,7 @@ from objects.planet     import Planet
 from objects.moon       import Moon
 
 import math
-from globals import *
+from constants import *
 
 def init(eccentricity, tilt, precession):
     """

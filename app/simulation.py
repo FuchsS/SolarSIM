@@ -9,7 +9,7 @@ import model as model
 import visual as vs
 from objects.planet     import Planet
 from helpers.namer import fn_namer
-from globals import *
+from constants import *
 
 class Simulation:
 
@@ -40,14 +40,9 @@ class Simulation:
         print( "• tilt: {:.2f}°".format( self.tilt ) )
         print( "• precession: {}".format( self.precession ) )
         
-        statusBar = self.panel.statusBar
-        
-#        self.panel.data1 = []
-#        self.panel.data2 = []
-        
-        t  = self.stepSize
+        t        = self.stepSize
         timeStep = 0
-        system = self.system
+        system   = self.system
 
         self.isStopped = False
         self.running   = True
@@ -69,36 +64,8 @@ class Simulation:
                 if(not self.running):
                     break
                 
-                self.currentObject = planet
-                
-                # DISPLAY INFOS
-                if planet == system.observation:
-
-                    r = planet.orbitalDistance/AU
-                    I = S/(4 * r**2)
-                    J = S/(4 * math.sqrt(1 - planet.e**2))
-                    statusBar.SetStatusText(
-                        ( "Time: {:.2f} years,"            + "    "
-                          "Distance: {:.2f} AU,"           + "    "
-                          "Orbital velocity: {:.2f} km/s," + "    "
-                          "Rotational velocity: {:.3f} km/s"
-                        ).format(
-                            t/DAY/YEAR,
-                            r,
-                            planet.orbitalVelocity/1000,
-                            planet.rotationalVelocity/1000
-                        )
-                    )
-                    # DEBUG
-#                    debug = "%s \t %.14f \t %.14f" % ( t, planet.orbitalAngularVelocity, planet.get_deltaOrbitalAngularPosition( t, dt ) )
-                
                 # ORBIT AROUND THE BARYCENTER
                 planet.orbit( t, dt )
-                if planet.model.rings:
-                    planet.model.rings.pos = planet.model.pos
-                    planet.model.rings.rotate( angle  = planet.get_deltaRotationalAngularPosition( t, dt ),     # angle in radians [rad]
-                                             axis = planet.model.rotationalAxis.axis # x, y, z
-                                           )
                 
                 # DEBUG
                 planet.distance += dt * planet.orbitalVelocity
@@ -114,11 +81,44 @@ class Simulation:
                     print( "· mean velocity: %.2f km/s" % (planet.meanVelocity/( t/dt )/1000) )
                     
                 # CALCULATE INSOLATION
-                print(planet.alpha)
-                oneYearPassed = planet.alpha > (planet.theta0 + 2*math.pi)
-                print( oneYearPassed )
-#                self.panel.data1.append(self.panel.datagen.next())
-#                self.panel.data2.append(-self.panel.data1[-1])
+                if ( t%DAY == 0 or dt == DAY): # only once a day
+                    # If one year has passed
+#                    oneYearPassed = planet.alpha > (planet.theta0 + 2*math.pi)
+#                    print( oneYearPassed )
+                    day   = round( t/DAY)
+                    tilt  = planet.tilt
+                    alpha = planet.alpha
+                    delta = math.asin( -math.sin(tilt) * math.sin(alpha) )
+                    r = planet.r/AU
+                    a = planet.a/AU
+                    # DEBUG
+#                    print( "{} day".format(int(day)) )
+#                    print( "· sun distance:        {:.2f} AU".format(r) )
+#                    print( "· right ascension:     {:3.2f}°".format(math.degrees(alpha)) )
+#                    print( "· declination:         {:3.2f}°".format(math.degrees(delta)) )
+                    data = [  ]
+                    for lat in range(-90, 91, 30): # for every latitude
+                        lat = math.radians(lat)
+                        h = math.acos( max( -1, min( +1, -math.tan(lat) * math.tan(delta) ) ) ) # hourAngleAtSunSet
+                        I = (S * a**2)/(math.pi * r**2) * (h * math.sin(lat) * math.sin(delta) + math.sin(h) * math.cos(lat) * math.cos(delta))
+                        data.append( (day, round( math.degrees(lat)), I) )
+                        # DEBUG
+#                        print( " {} deg".format( round( math.degrees( lat))))
+#                        print( "· hour angle:      {:3.2f}°".format( math.degrees( h)) )
+#                        print( "· solar radiation: {:.2f} W/m²".format( I) )
+                    planet.data.append(data)
+                
+                
+                    # If this is the planet which is beeing observed
+                    if planet == system.observation:
+                        # DEBUG
+                        for entry in planet.data[-1]:
+                            print( "{:.2f} {:.2f}".format(entry[1], entry[2]) )
+                            print("--")
+                        # Append data to chart data
+                        self.panel.data2.append(planet.data[-1])
+                        # Display infos in status bar
+                        self.updateStatusBar(t, planet)
                                     
 
             # MOONS
@@ -166,10 +166,27 @@ class Simulation:
             timeStep += 1
         
         self.isStopped = True
-        self.panel.draw() # draw the charts at the end of the simulation
+#        self.panel.draw() # draw the charts at the end of the simulation
         # Cleaning up
         wx.CallAfter(self.cleanupSimulation)
 
+    
+
+#    @fn_namer
+    def updateStatusBar(self, t, planet): # Display infos in the status bar
+        self.panel.statusBar.SetStatusText(
+            ( "Time: {:.2f} years,"            + "    "
+              "Distance: {:.2f} AU,"           + "    "
+              "Orbital velocity: {:.2f} km/s," + "    "
+              "Rotational velocity: {:.3f} km/s"
+            ).format(
+                t/DAY/YEAR,
+                planet.r/AU,
+                planet.orbitalVelocity/1000,
+                planet.rotationalVelocity/1000
+            )
+        )
+            
 
     @fn_namer
     def stopSimulation(self):
