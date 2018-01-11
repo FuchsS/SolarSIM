@@ -46,7 +46,7 @@ class Particle(object):
         self.name             = name
         self.mass             = mass
         self.radius           = radius
-        self.tilt             = tilt
+        self.tilt             = math.radians(tilt)
         self.precession       = precession
         self.rotationPeriod   = rotationPeriod
         self.barycenter       = barycenter
@@ -56,6 +56,7 @@ class Particle(object):
         self.orbitalDirection = orbitalDirection
         
         self.alpha            = theta0
+        self.data             = [  ]
         
         # Debug
         self.printed          = False
