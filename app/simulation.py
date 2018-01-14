@@ -57,8 +57,8 @@ class Simulation:
             vs.rate(self.speed)
             
             # PLANETS
-#            for planet in system.planets + system.comparisons:
-            for planet in system.planets:
+            for planet in system.comparisons + system.planets:
+#            for planet in system.planets:
                 
                 # Checks if the simulation should be stopped in between
                 if(not self.running):
@@ -68,6 +68,7 @@ class Simulation:
                 planet.orbit( t, dt )
                 
                 # DEBUG
+                print( "{} ({:.2f})".format(planet.name, planet.e) )
                 planet.distance += dt * planet.orbitalVelocity
                 planet.meanVelocity += planet.orbitalVelocity
                 if planet.printed == False and round(math.degrees(planet.alpha), 1) >= math.degrees(planet.theta0) + 360:
@@ -97,26 +98,61 @@ class Simulation:
 #                    print( "· right ascension:     {:3.2f}°".format(math.degrees(alpha)) )
 #                    print( "· declination:         {:3.2f}°".format(math.degrees(delta)) )
                     data = [  ]
-                    for lat in range(-90, 91, 30): # for every latitude
+                    for lat in LATS: # for every latitude
                         lat = math.radians(lat)
                         h = math.acos( max( -1, min( +1, -math.tan(lat) * math.tan(delta) ) ) ) # hourAngleAtSunSet
                         I = (S * a**2)/(math.pi * r**2) * (h * math.sin(lat) * math.sin(delta) + math.sin(h) * math.cos(lat) * math.cos(delta))
-                        data.append( (day, round( math.degrees(lat)), I) )
+                        data.append( ( int(math.degrees(lat)), I) )
                         # DEBUG
 #                        print( " {} deg".format( round( math.degrees( lat))))
 #                        print( "· hour angle:      {:3.2f}°".format( math.degrees( h)) )
-#                        print( "· solar radiation: {:.2f} W/m²".format( I) )
+                        print( "· solar radiation: {:.2f} W/m²".format( I) )
                     planet.data.append(data)
                 
                 
-                    # If this is the planet which is beeing observed
+                    # If this is the planet which is being observed
                     if planet == system.observation:
                         # DEBUG
-                        for entry in planet.data[-1]:
-                            print( "{:.2f} {:.2f}".format(entry[1], entry[2]) )
-                            print("--")
+#                        for i in range( 0, len(entry) ):
+#                            print( "{:.2f} {:.2f}".format( entry[i][1], entry[i][2] ) )
+                        numberOfDays = len(planet.data)
+                        totalSolarRadiation = [  ]
+                        for lat in LATS:
+                            totalSolarRadiation.append( 0 )
+                        for day, entry in enumerate(planet.data):
+                            print( "{}. day:".format(day) )
+                            for index, item in enumerate(entry):
+                                totalSolarRadiation[index] += item[1]
+
+                        planetData = []
+                        meanSolarRadiation = []
+                        for index, val in enumerate(totalSolarRadiation):
+                            meanSolarRadiation.append( val / numberOfDays )
+                        for index, val in enumerate(LATS):
+                            planetData.append( (val, meanSolarRadiation[index]) )
+                        
+                        for comparisonObject in system.comparisons:
+                            if planet.name == comparisonObject.name:
+                                numberOfDays = len(comparisonObject.data)
+                                totalSolarRadiation = [  ]
+                                for lat in LATS:
+                                    totalSolarRadiation.append( 0 )
+                                for day, entry in enumerate(comparisonObject.data):
+                                    print( "{}. day:".format(day) )
+                                    for index, item in enumerate(entry):
+                                        totalSolarRadiation[index] += item[1]
+
+                        comparisonObjectData = []
+                        meanSolarRadiation = []
+                        for index, val in enumerate(totalSolarRadiation):
+                            meanSolarRadiation.append( val / numberOfDays )
+                        for index, val in enumerate(LATS):
+                            comparisonObjectData.append( (val, meanSolarRadiation[index]) )
+                        
                         # Append data to chart data
-                        self.panel.data2.append(planet.data[-1])
+                        self.panel.chart2.data = [planetData, comparisonObjectData]
+                        print("--")
+        
                         # Display infos in status bar
                         self.updateStatusBar(t, planet)
                                     
@@ -131,21 +167,8 @@ class Simulation:
                 moon.model.pos = moon.barycenter.model.pos + moon.model.velocityVector
 
             # General transformation for all objects
-            for body in system.solarSystem:
-                # Simulate rotation around the objects own axis
-                body.model.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),               # angle in radians [rad]
-                                   axis   = body.model.rotationalAxis.axis # x, y, z
-                                 )
-                # Simulate movement and rotation of the object rings
-                if body.model.rings:
-                    body.model.rings.pos = body.model.pos
-                    body.model.rings.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),     # angle in radians [rad]
-                                             axis = body.model.rotationalAxis.axis # x, y, z
-                                           )
-                    
-            for body in system.comparisons:
-                # ORBIT AROUND THE BARYCENTER
-                body.orbit( t, dt )
+            for body in system.solarSystem + system.comparisons:
+#            for body in system.solarSystem:
                 # Simulate rotation around the objects own axis
                 body.model.rotate( angle  = body.get_deltaRotationalAngularPosition( t, dt ),               # angle in radians [rad]
                                    axis   = body.model.rotationalAxis.axis # x, y, z
@@ -161,7 +184,7 @@ class Simulation:
             # PROGRESS IN TIME
 #            self.panel.data1.append(self.panel.datagen.next())
 #            self.panel.data2.append(-self.panel.data1[-1])
-#            self.panel.draw() # live drawing (really slow)
+            self.panel.draw() # live drawing (really slow)
             t += dt
             timeStep += 1
         
