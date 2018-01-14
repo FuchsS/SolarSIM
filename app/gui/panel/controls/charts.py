@@ -16,19 +16,23 @@ import pylab
 
 class LineChart:
     
-    def __init__(self, parent, data, title, xlabel, ylabel, xmin=None, xmax=None, ymin=None, ymax=None, xticks=None, yticks=None, showGrid=False):
-        self.panel    = parent
-        self.data     = data
-        self.title    = title
-        self.xlabel   = xlabel
-        self.ylabel   = ylabel
-        self.xmin     = xmin
-        self.xmax     = xmax
-        self.ymin     = ymin
-        self.ymax     = ymax
-        self.xticks   = xticks
-        self.yticks   = yticks
-        self.showGrid = showGrid
+    def __init__(self, parent, data, title, xlabel, ylabel, xmin=None, xmax=None, ymin=None, ymax=None, xticks=None, yticks=None, xticks_minor=None, yticks_minor=None, showGrid=False):
+        self.panel        = parent
+        self.data         = data
+        self.title        = title
+        self.xlabel       = xlabel
+        self.ylabel       = ylabel
+        self.xmin         = xmin
+        self.xmax         = xmax
+        self.ymin         = ymin
+        self.ymax         = ymax
+        self.xticks       = xticks
+        self.xticks_minor = xticks_minor
+        self.yticks       = yticks
+        self.yticks_minor = yticks_minor
+        self.showGrid     = showGrid
+        
+        self.plottedData = []
         
         self.createChart()
         
@@ -42,20 +46,24 @@ class LineChart:
         height = self.panel.GetSize()[1] * 0.01041666666667
         margin = 0.4
         
-        self.fig  = plt.figure( figsize=(width, height-margin), dpi=self.dpi )
-        self.axes = self.fig.add_subplot(111)
-        self.axes.set_title(  self.title,  size=12)
-        self.axes.set_xlabel( self.xlabel, size=8)
-        self.axes.set_ylabel( self.ylabel, size=8)
-        self.axes.tick_params(axis='both', which='major', labelsize=8) # set the font size of the ticks
-        self.axes.set_axis_bgcolor('black')
+        self.fig = plt.figure( figsize=(width, height-margin), dpi=self.dpi )
+        self.ax  = self.fig.add_subplot(1, 1, 1)
+        self.ax.set_title(  self.title,  size=12)
+        self.ax.set_xlabel( self.xlabel, size=8)
+        self.ax.set_ylabel( self.ylabel, size=8)
+        self.ax.tick_params(axis='both', which='major', labelsize=8) # set the font size of the ticks
+        self.ax.set_axis_bgcolor('black')
 
+        colors = ['white', 'red', 'yellow', 'green']
         # Plot the data and save the reference
-        self.plottedData = self.axes.plot(
-            self.data,
-            linewidth = 1,
-            color     = (1, 1, 0),
-        )[0]
+        for i, subplot in enumerate(self.data):
+            self.plottedData.append(
+                self.ax.plot(
+                    subplot,
+                    linewidth = 1,
+                    color     = colors[i],
+                )[0]
+            )
         
         self.canvas = FigCanvas(self.panel, wx.ID_ANY, self.fig)
         
@@ -66,53 +74,39 @@ class LineChart:
         """
         Redraws the plot.
         """
-        # 1. Determine xmin, xmax:
-        #    If xmin is not set, it "follows" xmax to produce a sliding effect. 
-        #    Therefore, xmin is assigned after xmax.
-        if not self.xmax:
-            xmax = len(self.data) if len(self.data) > 50 else 50
-        else:
-            xmax = self.xmax
-        
-        if not self.xmin:
-            xmin = xmax - 50
-        else:
-            xmin = self.xmin
-        
-        # 2. Determine ymin, ymax:
-        #    Find the min and max values of the data set and add a margin.
-        if not self.ymin:
-            ymin = round(min(self.data), 0) - 1
-        else:
-            ymin = self.ymin
-        
-        if not self.ymax:
-            ymax = round(max(self.data), 0) + 1
-        else:
-            ymax = self.ymax
+        xmin = self.xmin
+        xmax = self.xmax
+        ymin = self.ymin
+        ymax = self.ymax
 
-        self.axes.set_xbound( lower=xmin, upper=xmax )
-        self.axes.set_ybound( lower=ymin, upper=ymax )
+        self.ax.set_xbound( lower=xmin, upper=xmax )
+        self.ax.set_ybound( lower=ymin, upper=ymax )
         
         # 3. Add ticks to the plot
         if self.xticks:
-            self.axes.set_xticks( self.xticks )
+            self.ax.set_xticks( self.xticks )
         if self.yticks:
-            self.axes.set_yticks( self.yticks )
+            self.ax.set_yticks( self.yticks )
         
         # 4. Add a grid to the chart
         if self.showGrid:
-            self.axes.grid( True, color='gray' )
+            self.ax.grid( True, color='gray' )
         else:
-            self.axes.grid( False )
+            self.ax.grid( False )
     
         # Using setp here is convenient, because get_xticklabels
         # returns a list over which one needs to explicitly 
         # iterate, and setp already handles this.
         #  
-        pylab.setp(self.axes.get_xticklabels(), visible=True)
+        pylab.setp(self.ax.get_xticklabels(), visible=True)
         
-        self.plottedData.set_xdata( np.arange(len(self.data)) )
-        self.plottedData.set_ydata( np.array(self.data) )
+        for i, subplot in enumerate(self.data):
+            xdata = []
+            ydata = []
+            for x, y in subplot:
+                xdata.append(x)
+                ydata.append(y)
+            self.plottedData[i].set_xdata( xdata )
+            self.plottedData[i].set_ydata( ydata )
         
         self.canvas.draw()

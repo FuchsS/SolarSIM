@@ -25,6 +25,8 @@ import controls.panel        as cp      # for the control panel
 import controls.statusbar    as sb      # for the status bar
 from simulation import Simulation           # for the simulation
 from helpers.namer import fn_namer
+
+from constants import *
     
 
 import random
@@ -79,8 +81,15 @@ class Window(wx.Frame):
         self.Maximize(True) # show full screen
         
         self.datagen = DataGen()
-        self.data1 = [self.datagen.next()]
-        self.data2 = [ -self.data1[-1] ]
+#        self.data1 = [self.datagen.next()]
+        self.data1 = []
+        data = []
+        data2 = []
+        for lat in LATS:
+            data.append( (lat, 0) )
+            data2.append( (lat, 0) )
+        self.data2 = [data, data2]
+#        self.data2 = [ -self.data1[-1] ]
                     
         # Create the panel, sizer and controls
         mb.MenuBar(self)

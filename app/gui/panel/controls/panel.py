@@ -61,6 +61,12 @@ def CreatePanel(self, width, height):
                    pos=(0, 0)
                  ).SetFont( h1 )
     # First chart
+    xmin=0
+    xmax=365
+    xsteps=50
+    ymin=-90
+    ymax=90
+    ysteps=30
     chartPanel1 = wx.Panel(chartRegion, pos=(0, margin), size=(width, height/2))
     self.chart1 = charts.LineChart(
         parent  = chartPanel1,
@@ -69,10 +75,16 @@ def CreatePanel(self, width, height):
         xlabel  = "Day",
         ylabel  = "Latitude",
         xmin=0, xmax=365, ymin=-90, ymax=90,
-        xticks=range(0,365+1,50), yticks=range(-90,90+1,30),
+        xticks=range(xmin, xmax+1, xsteps), yticks=range(ymin, ymax+1, ysteps),
         showGrid=True,
     )
     # Second chart
+    xmin=-90
+    xmax=90
+    xsteps=30
+    ymin=150
+    ymax=450
+    ysteps=50
     chartPanel2 = wx.Panel(chartRegion, pos=(0, height/2), size=(width, height/2))
     self.chart2 = charts.LineChart(
         parent  = chartPanel2,
@@ -80,8 +92,10 @@ def CreatePanel(self, width, height):
         title   = "Annual average distribution over latitudes",
         xlabel  = "Latitude",
         ylabel  = u"Medium zonal solar radiation (W/m²)",
-        xmin=-90, xmax=90,
-        xticks=range(-90,90+1,30),
+        xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,
+        xticks=range(xmin, xmax+1, xsteps), yticks=range(ymin, ymax+1, ysteps),
+        xticks_minor=range(xmin, xmax+1, 10),
+        yticks_minor=range(ymin, ymax+1, 25),
         showGrid=True,
     )
     
