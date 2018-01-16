@@ -35,8 +35,8 @@ class MenuBar:
 
         # Assign menus to menubar
         menubar.Append(self._init_fileMenu(), '&File')
-        menubar.Append(self._init_editMenu(), '&Edit')
-        menubar.Append(self._init_viewMenu(), '&View')
+#        menubar.Append(self._init_editMenu(), '&Edit')
+#        menubar.Append(self._init_viewMenu(), '&View')
 
         # Assign to window
         self.window.SetMenuBar(menubar)
@@ -49,7 +49,7 @@ class MenuBar:
         
 #        self.CreateMenuItem( menu=fileMenu, id=wx.ID_NEW,  name='&New',  shortcut='Ctrl+N', icon='icons/new.png',  event=self.window.OnNew , info='New simulation run')
 #        self.CreateMenuItem( menu=fileMenu, id=wx.ID_OPEN, name='&Open', shortcut='Ctrl+O', icon='icons/open.png', event=self.window.OnOpen, info="Open saved settings")
-        self.CreateMenuItem( menu=fileMenu, id=wx.ID_SAVE, name='&Save', shortcut='Ctrl+S', icon='icons/save.png', event=self.window.OnSave, info="Save plot as...")
+        self.CreateMenuItem( menu=fileMenu, id=wx.ID_SAVE, name='&Save output', shortcut='Ctrl+S', icon='icons/save.png', event=self.window.OnSave, info="Save plot as...")
         fileMenu.AppendSeparator()
         self.CreateMenuItem( menu=fileMenu, id=wx.ID_EXIT, name='&Quit', shortcut='Ctrl+Q', icon='icons/exit.png', event=self.window.OnClose)
 

@@ -27,35 +27,6 @@ from simulation import Simulation           # for the simulation
 from helpers.namer import fn_namer
 
 from constants import *
-    
-
-import random
-class DataGen(object):
-    """ A silly class that generates pseudo-random data for
-        display in the plot.
-    """
-    def __init__(self, init=50):
-        self.data = self.init = init
-        
-    def next(self):
-        self._recalc_data()
-        return self.data
-    
-    def _recalc_data(self):
-        delta = random.uniform(-0.5, 0.5)
-        r = random.random()
-
-        if r > 0.9:
-            self.data += delta * 15
-        elif r > 0.8: 
-            # attraction to the initial value
-            delta += (0.5 if self.init > self.data else -0.5)
-            self.data += delta
-        else:
-            self.data += delta
-
-
-
 
 class Window(wx.Frame):
     """
@@ -80,22 +51,24 @@ class Window(wx.Frame):
         self.SetIcon( wx.Icon('icons/title.png', wx.BITMAP_TYPE_PNG) ) # set application icon
         self.Maximize(True) # show full screen
         
-        self.datagen = DataGen()
-#        self.data1 = [self.datagen.next()]
-        self.data1 = []
-        data = []
+        zdata = []
+#        for lat in LATS:
+#            zdata.append( (0) )
+        self.data1 = [zdata]
+
+        data1 = []
         data2 = []
-        for lat in LATS:
-            data.append( (lat, 0) )
-            data2.append( (lat, 0) )
-        self.data2 = [data, data2]
-#        self.data2 = [ -self.data1[-1] ]
+#        for lat in LATS:
+#            data.append( (lat, 0) )
+#            data2.append( (lat, 0) )
+        self.data2 = [data1, data2]
                     
         # Create the panel, sizer and controls
         mb.MenuBar(self)
         self.toolbar      = tb.CreateToolBar(self)
         self.statusBar    = sb.CreateStatusBar(self)
         self.panel        = cp.CreatePanel(self, width, height)
+        self.live         = True
 
         # Close all windows on exit
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -201,6 +174,14 @@ class Window(wx.Frame):
 
     # CHANGE OF SIMULATION SETTINGS
     @fn_namer
+    def OnSelectLiveDrawing(self, event):
+        options = self.panel.liveDrawing_options
+        for button, label, value in options:
+            if( button.GetValue() ): # Get the option, where radio button is checked
+                print( "• liveDrawing: {}".format( value ) )
+                self.live = value
+    
+    @fn_namer
     def OnSelectStepsize(self, event):
         options = self.panel.stepSize_options
         for button, label, value in options:
@@ -248,7 +229,7 @@ class Window(wx.Frame):
             if( button.GetValue() ): # Get the option, where radio button is checked
                 print( "• eccentricity: {:f}".format(value).rstrip('0') )
                 self.eccentricity = value
-                self.panel.eccentricity.SetLabel( "{:f}".format(value).rstrip('0') )
+                self.panel.eccentricity.SetLabel( "{:.5f}".format(value).rstrip('0') )
 #                try:
 #                    self.simulation.ChangeOrbitalParameters( eccentricity=value )
 #                except AttributeError:
@@ -285,16 +266,6 @@ class Window(wx.Frame):
 
     @fn_namer
     def OnSave(self, event):
-#        file_choices = "PNG (*.png)|*.png"
-        
-#        dlg = wx.FileDialog(
-#            self.parent,
-#            message     = "Save plot as...",
-#            defaultDir  = os.getcwd(),
-#            defaultFile = "plot.png",
-#            wildcard    = file_choices,
-#            style       = wx.SAVE
-#        )
         dialog = wx.DirDialog (None, "Save in directory", "",
                     wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
         
@@ -304,9 +275,6 @@ class Window(wx.Frame):
             file2 = self.chart2.title
             self.chart1.canvas.print_figure(path + "\\" + file1, dpi=self.chart1.dpi)
             self.chart2.canvas.print_figure(path + "\\" + file2, dpi=self.chart2.dpi)
-#            self.flash_status_message("Saved to %s" % path)
-#        self.chart1.on_save_plot("Save")
-#        self.chart2.on_save_plot("Save")
 
     @fn_namer
     def OnAbout(self, event):

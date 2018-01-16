@@ -10,6 +10,7 @@ import visual as vs
 from objects.planet     import Planet
 from helpers.namer import fn_namer
 from constants import *
+import numpy as np
 
 class Simulation:
 
@@ -46,7 +47,9 @@ class Simulation:
 
         self.isStopped = False
         self.running   = True
-        while self.running:
+#        while self.running:
+        while self.running and t/DAY < max(DAYS):
+            print( "{}. day".format(t/DAY) )
             dt = self.stepSize
             
             # Lasting trail
@@ -67,8 +70,11 @@ class Simulation:
                 # ORBIT AROUND THE BARYCENTER
                 planet.orbit( t, dt )
                 
+                
                 # DEBUG
-                print( "{} ({:.2f})".format(planet.name, planet.e) )
+                # If one year has passed
+#                    oneYearPassed = planet.alpha > (planet.theta0 + 2*math.pi)
+#                    print( oneYearPassed )
                 planet.distance += dt * planet.orbitalVelocity
                 planet.meanVelocity += planet.orbitalVelocity
                 if planet.printed == False and round(math.degrees(planet.alpha), 1) >= math.degrees(planet.theta0) + 360:
@@ -81,77 +87,28 @@ class Simulation:
                     print( "· traveled distance: %.2f km" % (planet.distance/1000) )
                     print( "· mean velocity: %.2f km/s" % (planet.meanVelocity/( t/dt )/1000) )
                     
-                # CALCULATE INSOLATION
+                # CALCULATE SOLAR RADIATION
                 if ( t%DAY == 0 or dt == DAY): # only once a day
-                    # If one year has passed
-#                    oneYearPassed = planet.alpha > (planet.theta0 + 2*math.pi)
-#                    print( oneYearPassed )
-                    day   = round( t/DAY)
-                    tilt  = planet.tilt
-                    alpha = planet.alpha
-                    delta = math.asin( -math.sin(tilt) * math.sin(alpha) )
-                    r = planet.r/AU
-                    a = planet.a/AU
                     # DEBUG
-#                    print( "{} day".format(int(day)) )
-#                    print( "· sun distance:        {:.2f} AU".format(r) )
-#                    print( "· right ascension:     {:3.2f}°".format(math.degrees(alpha)) )
-#                    print( "· declination:         {:3.2f}°".format(math.degrees(delta)) )
-                    data = [  ]
-                    for lat in LATS: # for every latitude
-                        lat = math.radians(lat)
-                        h = math.acos( max( -1, min( +1, -math.tan(lat) * math.tan(delta) ) ) ) # hourAngleAtSunSet
-                        I = (S * a**2)/(math.pi * r**2) * (h * math.sin(lat) * math.sin(delta) + math.sin(h) * math.cos(lat) * math.cos(delta))
-                        data.append( ( int(math.degrees(lat)), I) )
-                        # DEBUG
-#                        print( " {} deg".format( round( math.degrees( lat))))
-#                        print( "· hour angle:      {:3.2f}°".format( math.degrees( h)) )
-                        print( "· solar radiation: {:.2f} W/m²".format( I) )
-                    planet.data.append(data)
-                
+#                    print( "{}. day:".format( int(t/DAY) ) )
+                    self.calculateSolarRadiation(planet)
                 
                     # If this is the planet which is being observed
                     if planet == system.observation:
-                        # DEBUG
-#                        for i in range( 0, len(entry) ):
-#                            print( "{:.2f} {:.2f}".format( entry[i][1], entry[i][2] ) )
-                        numberOfDays = len(planet.data)
-                        totalSolarRadiation = [  ]
-                        for lat in LATS:
-                            totalSolarRadiation.append( 0 )
-                        for day, entry in enumerate(planet.data):
-                            print( "{}. day:".format(day) )
-                            for index, item in enumerate(entry):
-                                totalSolarRadiation[index] += item[1]
-
-                        planetData = []
-                        meanSolarRadiation = []
-                        for index, val in enumerate(totalSolarRadiation):
-                            meanSolarRadiation.append( val / numberOfDays )
-                        for index, val in enumerate(LATS):
-                            planetData.append( (val, meanSolarRadiation[index]) )
+# TO DO: Calculate running mean (=> much faster!)
+                        planetData = self.getMeanSolarRadiation(planet)
                         
                         for comparisonObject in system.comparisons:
                             if planet.name == comparisonObject.name:
-                                numberOfDays = len(comparisonObject.data)
-                                totalSolarRadiation = [  ]
-                                for lat in LATS:
-                                    totalSolarRadiation.append( 0 )
-                                for day, entry in enumerate(comparisonObject.data):
-                                    print( "{}. day:".format(day) )
-                                    for index, item in enumerate(entry):
-                                        totalSolarRadiation[index] += item[1]
-
-                        comparisonObjectData = []
-                        meanSolarRadiation = []
-                        for index, val in enumerate(totalSolarRadiation):
-                            meanSolarRadiation.append( val / numberOfDays )
-                        for index, val in enumerate(LATS):
-                            comparisonObjectData.append( (val, meanSolarRadiation[index]) )
+                                comparisonObjectData = self.getMeanSolarRadiation(comparisonObject)
                         
                         # Append data to chart data
+                        solarRadiationDistribution = np.zeros( (LATS.shape[0], DAYS.shape[0]-1) )
+                        for x, dailyData in enumerate(planet.data):
+                            for y, lat in enumerate(LATS):
+                                solarRadiationDistribution[y,x] = dailyData[y][1]
+                        self.panel.chart1.data = solarRadiationDistribution
                         self.panel.chart2.data = [planetData, comparisonObjectData]
-                        print("--")
         
                         # Display infos in status bar
                         self.updateStatusBar(t, planet)
@@ -182,14 +139,13 @@ class Simulation:
             
             
             # PROGRESS IN TIME
-#            self.panel.data1.append(self.panel.datagen.next())
-#            self.panel.data2.append(-self.panel.data1[-1])
-            self.panel.draw() # live drawing (really slow)
+            if self.panel.live:
+                self.panel.draw() # live drawing (really slow)
             t += dt
             timeStep += 1
         
         self.isStopped = True
-#        self.panel.draw() # draw the charts at the end of the simulation
+        self.panel.draw() # draw the charts at the end of the simulation
         # Cleaning up
         wx.CallAfter(self.cleanupSimulation)
 
@@ -209,7 +165,59 @@ class Simulation:
                 planet.rotationalVelocity/1000
             )
         )
+
+
+#    @fn_namer
+    def calculateSolarRadiation(self, body):
+        tilt  = body.tilt
+        alpha = body.alpha
+        delta = math.asin( -math.sin(tilt) * math.sin(alpha) )
+        r = body.r/AU
+        a = body.a/AU
+        # DEBUG
+#        print( "{}\t(with eccentricity: {:.3f})".format(body.name, body.e) )
+#        print( "· sun distance:        {:.2f} AU".format(r) )
+#        print( "· right ascension:     {:3.2f}°".format(math.degrees(alpha)) )
+#        print( "· declination:         {:3.2f}°".format(math.degrees(delta)) )
+        solarRadiation = []
+        for lat in LATS: # for every latitude
+            lat = math.radians(lat)
+            h = math.acos( max( -1, min( +1, -math.tan(lat) * math.tan(delta) ) ) ) # hourAngleAtSunSet
+            I = (S * a**2)/(math.pi * r**2) * (h * math.sin(lat) * math.sin(delta) + math.sin(h) * math.cos(lat) * math.cos(delta))
+            solarRadiation.append( ( int(math.degrees(lat)), I) )
+            # DEBUG
+#            print( " {} deg".format( round( math.degrees( lat))))
+#            print( "· hour angle:      {:3.2f}°".format( math.degrees( h)) )
+#            print( "· solar radiation: {:.2f} W/m²".format( I) )
+        body.data.append(solarRadiation)
+    
             
+#    @fn_namer
+    def getMeanSolarRadiation(self, body):
+        result = []
+        
+        totalSolarRadiation = []
+        # Initialize the total solar radiation for every latitude with zero
+        for lat in LATS:
+            totalSolarRadiation.append( 0 )
+        
+        # Sum up the total solar radiation
+        for entry in body.data:
+            for i, val in enumerate(entry):
+                totalSolarRadiation[i] += val[1]
+        
+        # Calculate the mean solar radiation
+        numberOfDays        = len(body.data)
+        meanSolarRadiation  = []
+        for val in totalSolarRadiation:
+            meanSolarRadiation.append( val / numberOfDays )
+        
+        # Create the result
+        for i, val in enumerate(LATS):
+            result.append( (val, meanSolarRadiation[i]) )
+        
+        return result
+    
 
     @fn_namer
     def stopSimulation(self):
