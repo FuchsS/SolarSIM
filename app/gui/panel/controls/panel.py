@@ -20,6 +20,7 @@ import wx # for widgets
 
 
 import charts
+from constants import *
 
 
 # CONTROL PANEL
@@ -68,13 +69,13 @@ def CreatePanel(self, width, height):
     ymax=90
     ysteps=30
     chartPanel1 = wx.Panel(chartRegion, pos=(0, margin), size=(width, height/2))
-    self.chart1 = charts.LineChart(
+    self.chart1 = charts.HeatMap(
         parent  = chartPanel1,
         data    = self.data1,
-        title   = "Distribution over seasons and latitudes",
+        title   = "Solar Radiation - Distribution Over Seasons And Latitudes",
         xlabel  = "Day",
         ylabel  = "Latitude",
-        xmin=0, xmax=365, ymin=-90, ymax=90,
+        xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,
         xticks=range(xmin, xmax+1, xsteps), yticks=range(ymin, ymax+1, ysteps),
         showGrid=True,
     )
@@ -89,13 +90,12 @@ def CreatePanel(self, width, height):
     self.chart2 = charts.LineChart(
         parent  = chartPanel2,
         data    = self.data2,
-        title   = "Annual average distribution over latitudes",
+        title   = "Solar Radiation - Annual Average Distribution Over Latitudes",
         xlabel  = "Latitude",
         ylabel  = u"Medium zonal solar radiation (W/m²)",
         xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,
         xticks=range(xmin, xmax+1, xsteps), yticks=range(ymin, ymax+1, ysteps),
-        xticks_minor=range(xmin, xmax+1, 10),
-        yticks_minor=range(ymin, ymax+1, 25),
+        labels=['Settings','Today\'s conditions'],
         showGrid=True,
     )
     
@@ -107,6 +107,28 @@ def CreatePanel(self, width, height):
                  ).SetFont( h1 )
     
     # Skip one line
+    row.next()
+    
+    # SELECTION OF THE SIMULATION STEP SIZE
+    wx.StaticBox( parent=mainPanel, id=wx.NewId(), label='Live drawing',
+                  pos=( cols[0], row.next() ), size=(200, 80)
+                ).SetFont( normal )
+    # Create a group of radio buttons
+    radioButtons = []
+    radio1 = wx.RadioButton( parent=mainPanel, id=wx.NewId(), label="yes", style=wx.RB_GROUP)
+    radio2 = wx.RadioButton( parent=mainPanel, id=wx.NewId(), label="no")
+    radioButtons.append(radio1)
+    radioButtons.append(radio2)
+    # Set position for each radio button and setup an event handler
+    for radio in radioButtons:
+        radio.SetPosition( (cols[1], row.next() ) )
+        self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectLiveDrawing, radio )
+    options = [ (radio1, radio1.GetLabel(), True), (radio2, radio2.GetLabel(), False) ]
+    mainPanel.liveDrawing_options = options
+    mainPanel.liveDrawing_radioButtons = radioButtons
+    
+    # Skip two lines
+    row.next()
     row.next()
     
     # SELECTION OF THE SIMULATION STEP SIZE
@@ -164,13 +186,13 @@ def CreatePanel(self, width, height):
       
     # Slider to control the speed of the simulation
     mainPanel.speedSlider = wx.Slider( parent=mainPanel, id=wx.NewId(), value=1, minValue=1, maxValue=100, 
-              pos=(cols[16], rows[8]), size=(-1, 140), 
+              pos=(cols[16], rows[13]), size=(-1, 140), 
               style=(wx.SL_LEFT | wx.SL_INVERSE | wx.SL_MIN_MAX_LABELS ) )
     self.Bind( wx.EVT_SCROLL, self.OnSpeedSlider )
     
     # Display the current value
     mainPanel.speed = wx.StaticText( parent=mainPanel, id=wx.NewId(), label='1x', 
-                               pos=(cols[13], rows[11]))
+                               pos=(cols[13], rows[16]))
     
     # Skip two lines
     row.next()
@@ -201,15 +223,15 @@ def CreatePanel(self, width, height):
     for radio in radioButtons:
         radio.SetPosition( (cols[1], row.next() ) )
         self.Bind( wx.EVT_RADIOBUTTON, self.OnSelectEccentricity, radio )
-    options = [ (radio1, radio1.GetLabel(), 0.017),
-                (radio2, radio2.GetLabel(), 0.00006),
+    options = [ (radio1, radio1.GetLabel(), 0.0167086),
+                (radio2, radio2.GetLabel(), 0.000055),
                 (radio3, radio3.GetLabel(), 0.0679),
               ]
     mainPanel.eccentricity_options = options
     
     # Display the current value
-    mainPanel.eccentricity = wx.StaticText( parent=mainPanel, id=wx.NewId(), label='0.017', 
-                               pos=(cols[13], rows[20]))
+    mainPanel.eccentricity = wx.StaticText( parent=mainPanel, id=wx.NewId(), label='0.01671', 
+                               pos=(cols[13], rows[25]))
     
     # Skip one line
     row.next()
@@ -238,7 +260,7 @@ def CreatePanel(self, width, height):
     
     # Display the current value
     mainPanel.tilt = wx.StaticText( parent=mainPanel, id=wx.NewId(), label='23.44'+unicode('°', 'utf-8'), 
-                               pos=(cols[13], rows[25]))
+                               pos=(cols[13], rows[30]))
     
     # Skip one line
     row.next()
