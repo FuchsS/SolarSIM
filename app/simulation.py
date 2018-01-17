@@ -169,11 +169,12 @@ class Simulation:
 
 #    @fn_namer
     def calculateSolarRadiation(self, body):
-        tilt  = body.tilt
-        alpha = body.alpha
-        delta = math.asin( -math.sin(tilt) * math.sin(alpha) )
-        r = body.r/AU
-        a = body.a/AU
+        tilt       = body.tilt
+        precession = body.precession
+        alpha      = body.alpha
+        delta      = math.asin( precession * -math.sin(tilt) * math.sin(alpha) )
+        r          = body.r/AU
+        a          = body.a/AU
         # DEBUG
 #        print( "{}\t(with eccentricity: {:.3f})".format(body.name, body.e) )
 #        print( "· sun distance:        {:.2f} AU".format(r) )
