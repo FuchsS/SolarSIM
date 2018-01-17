@@ -1,0 +1,5 @@
+ABGABE
+• Benutzerhandbuch mit Beispielbildern (stattdessen: Quickstart-Guide)
+• Auflistung der Grundgleichungen und Annahmen im Modell (stattdessen: Linksammlung und Excel-Tabellen)
+• Code
+
