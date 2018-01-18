@@ -25,6 +25,11 @@
                                      
     
 """
+# Add the working directory to the PYTHONPATH so that its subdirectories can be added as modules (necessary on MAC)
+import os
+import sys
+sys.path.append( os.path.realpath('.') )
+#print sys.path
 
 import wx                                   # for widgets
 from   gui.panel.frame import Window # for the control window
