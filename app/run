@@ -1,0 +1,11 @@
+# Set the necessary python version:
+PYVER=2.7
+# Get the directory of the python executeables and use the one with the correct version (e.g. /usr/bin/python2.7)
+export PYTHON="$(which python)"$PYVER
+
+# Set the current directory as working directory, so that its subdirectories can be accessed as modules
+ENV=`$PYTHON -c "import os; print os.path.abspath(os.path.join(os.path.dirname(\"$0\"), '..'))"`
+
+# Now run python with the right version and environment
+export PYTHONHOME=$ENV 
+$PYTHON app.py
