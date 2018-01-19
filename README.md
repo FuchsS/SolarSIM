@@ -14,7 +14,7 @@
 # You can download the program from this location: https://github.com/FuchsS/SolarSIM
 ################################################################################################################################
 #
-#
+# PREREQUISITES:
 #
 # First, we create a virtual environment to make any changes there:
 #
@@ -38,14 +38,17 @@
 #
 #
 #
-# Starting the simulation:
-# 
-#   In order to run the simulation, you must set the environment to the correct Python version (e.g. python2.7).
+# STARTING THE SIMULATION:
 #
-# • Windows: switch to the app directory and execute 'python app.py':
+# If the virtual environment is not already activated, activate it with the following commands:
+#
+# • Windows:
+#    activate solarSIM
+#
+# • macOS and Linux:
+#    source activate solarSIM
+#
+# In order to run the simulation, switch to the app directory and execute 'python app.py':
+#
 #    cd app
 #    python app.py
-#
-# • macOS and Linux: switch to the app directory and execute the file 'run':
-#    cd app
-#    ./run
