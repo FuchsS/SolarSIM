@@ -9,22 +9,43 @@
 # Email:	   	  stefan.mario.fuchs@web.de
 #
 # Python version: 2.7
-# Requirements:   Anaconda, wxpython, mwcraig vpython
+# Requirements:   Anaconda, pip, matplotlib=1.4.3, numpy, pil, wxpython, mwcraig vpython
 #
 # You can download the program from this location: https://github.com/FuchsS/SolarSIM
 ################################################################################################################################
-
-# Before you start the program, first make sure that all prerequisites are met:
-conda install wxpython
-conda install -c mwcraig vpython
-
+#
+#
+#
+# First, we create a virtual environment to make any changes there:
+#
+#    conda create -n solarSIM python=2.7
+#
+# Now we activate the virtual environment to install the packages there:
+#
+# • Windows:
+#    activate solarSIM
+#
+# • macOS and Linux:
+#    source activate solarSIM
+#
+# Now we install all missing packages:
+#
+#    conda install wxpython
+#    conda install -c mwcraig vpython
+#    conda install matplotlib=1.4.3
+#    pip install numpy --upgrade
+#    conda install pil
+#
+#
+#
 # Starting the simulation:
 # 
 #   In order to run the simulation, you must set the environment to the correct Python version (e.g. python2.7).
 #
-# • macOS and Linux: switch to the app directory and execute the file 'run':
-#    cd app
-#    ./run
 # • Windows: switch to the app directory and execute 'python app.py':
 #    cd app
 #    python app.py
+#
+# • macOS and Linux: switch to the app directory and execute the file 'run':
+#    cd app
+#    ./run
