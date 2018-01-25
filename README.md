@@ -40,15 +40,15 @@
 #
 # STARTING THE SIMULATION:
 #
-# If the virtual environment is not already activated, activate it with the following commands:
+# Activate the virtual environment and run the following commands:
 #
 # • Windows:
 #    activate solarSIM
+#    cd app
+#    python app.py
+#
 #
 # • macOS and Linux:
 #    source activate solarSIM
-#
-# In order to run the simulation, switch to the app directory and execute 'python app.py':
-#
 #    cd app
-#    python app.py
+#    pythonw app.py
