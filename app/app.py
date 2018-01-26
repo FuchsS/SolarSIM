@@ -57,7 +57,10 @@ class App(wx.App):
         """
         Initialise the app with a control window.
         """
-        self.frame = Window(None, id=wx.ID_ANY, title='SolarSIM', width=1024, height=768)
+#        width, height = wx.GetDisplaySize()
+        width  = 800
+        height = 800
+        self.frame = Window(None, id=wx.ID_ANY, title='SolarSIM', width=width, height=height)
         self.frame.Show(True) # display the window
         return True
 
